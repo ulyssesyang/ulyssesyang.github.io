@@ -209,6 +209,7 @@
 		//click to start card to reset cards
 		$('#start').on('click',function(){
 			audio_assigncard.play();
+			$('.gamestatus').html('<br><strong>Match puppies now!</strong>');
 			//hide start card during the game
 			$('#start').hide("slow");
 			$('#levelmenu').hide("slow");

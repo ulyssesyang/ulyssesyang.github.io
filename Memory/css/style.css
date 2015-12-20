@@ -62,6 +62,8 @@ ul.ChooseDifficulty {
 	margin-left: 10px;
 	margin-top: 10px;
 	margin-bottom: 10px;
+	border: 2px solid darkred;
+  box-shadow: 0 0 5px 0;
   width: 150px;
   height: 150px;
   float: left;
@@ -72,6 +74,8 @@ ul.ChooseDifficulty {
 	margin-left: 10px;
 	margin-top: 10px;
 	margin-bottom: 10px;
+	border: 2px solid darkred;
+  box-shadow: 0 0 5px 0;
   width: 150px;
   height: 150px;
   float: left;
