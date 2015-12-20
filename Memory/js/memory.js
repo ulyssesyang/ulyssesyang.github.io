@@ -7,16 +7,23 @@
 		//initial game data
 		var color=['red','purple','lightgreen','gray','orange','darkred','blue','yellow','brown','lightblue'];
 		var cards=$('.card');
-		var matchCard=0;
 		var winPoints=7;
 		var currentPoints=0;
 		var totalSteps=12;
 		var currentSteps=0;
 		var images=[];
 		var difficulty='medium';
-		var originalCards=$('.cards');
-		var tempimages=[];
-		var tempcards=[];
+		var matchimages=[];
+		var matchcards=[];
+		var matchdonecards=[];
+		var audio_assigncard = new Audio("audio/assigncard.wav");
+		var audio_autoflip = new Audio("audio/autoflip.wav");
+		var audio_click = new Audio("audio/click.wav");
+		var audio_dogbark = new Audio("audio/dogbark.wav");
+		var audio_flipcards = new Audio("audio/flipcards.wav");
+		var audio_mouseover = new Audio("audio/mouseover.wav");
+		var audio_losegame = new Audio("audio/sadwhisle.wav");
+		var audio_wingame = new Audio("audio/yatta.mp3");
 
 		//update Game Difficulty Rule
 		var updateGameRule = function(difficulty, totalSteps, winPoints){
@@ -25,21 +32,23 @@
 													+winPoints+ '</strong> dogs, then you win!');
 		}
 		//update Game Status
-		var updateGameStatus = function(currentPoints,totalSteps){
+		var updateGameStatus = function(currentPoints,currentSteps){
 			$('.gamestatus').html('<br>You have matched <strong>'+currentPoints+'</strong> dogs!<br><br>'+
 													'You have <strong>'+(totalSteps- currentSteps)+ '</strong> times to match dogs!');
 		}
 
-		//flip Card front to show card back image in 1s
+		//flip Card front to show card image in 1s
 		var flipCardfront = function(){
 			$('.card.flipped .cardback').css({transform:'rotateY(0deg)'},1000);
 			$('.card.flipped .cardfront').css({transform:'rotateY(-180deg)'},1000);
+			audio_flipcards.play();
 		}
 
-		//flip Card back to show card front image in 0.6s
+		//flip Card back to show card color in 0.6s
 		var flipCardback = function(){
 			$('.card.flipped .cardback').css({transform:'rotateY(-180deg)'},600);
 			$('.card.flipped .cardfront').css({transform:'rotateY(0deg)'},600);
+			audio_autoflip.play();
 		}
 
 		//default difficulty level: medium
@@ -47,15 +56,18 @@
 
 		//difficulty level menu
 		var levelmenu = $(".levelmenu");
-	  levelmenu.hover(function(){
-	  		$('.levelmenu ul').children('a').addClass("hover")
+	  levelmenu.hover(function(event){
+	  		event.stopPropagation();
+	  		$('.levelmenu ul').children('a').addClass("hover");
 	  		$('.ChooseDifficulty').show();
+	  		audio_mouseover.play();
 	  }, function(){
-	  		if($('.levelmenu ul a').hasClass('hover')!==true){
+	  		event.stopPropagation();
+	  		if($('.levelmenu ul').hasClass('hover')!==true){
 	  			$('.levelmenu ul').children('a').removeClass("hover");
 	    		$('.ChooseDifficulty').delay(1000).hide(0);
 	  		} else {
-	  			$('.levelmenu ul').removeClass("hover");
+	  			$('.levelmenu ul').children('a').removeClass("hover");
 	    		$('.ChooseDifficulty').delay(1000).hide(0);
 	  		}
 	  });
@@ -66,18 +78,21 @@
 			totalSteps=15;
 			difficulty='easy';
 			updateGameRule(difficulty,totalSteps,winPoints);
+			audio_click.play();
 	 	});
 	  $('#medium').on('click',function(){
 	   	winPoints=7;
 			totalSteps=12;
 			difficulty='medium';
 			updateGameRule(difficulty,totalSteps,winPoints);
+			audio_click.play();
 	 	});
 	 	$('#hard').on('click',function(){
 	   	winPoints=8;
 			totalSteps=10;
 			difficulty='hard';
 			updateGameRule(difficulty,totalSteps,winPoints);
+			audio_click.play();
 	 	});
 
 		//initial start card and hide cards
@@ -86,153 +101,161 @@
 
 		//reset Card
 		var resetCard = function(){
-			//loading data
-			currentPoints=0;
-			currentSteps=0;
 
-			//reset to show card front
+			//reset card property
 			$('.cardfront').css({'transform':''},{'background-image':''},{'background-color':''});
 			$('.cardback').css({'transform':''},{'background-image':''},{'background-color':''});
 			console.log('reset!');
-			
 
-			//loading image
+			//reset image
 			images=['img/1.png','img/2.png','img/3.png','img/4.png',
 								'img/5.png','img/6.png','img/7.png','img/8.png',
 								'img/1.png','img/2.png','img/3.png','img/4.png',
 								'img/5.png','img/6.png','img/7.png','img/8.png'];
 
-			//initialize each card div
+			//assign card color and images
 			for (var i = 0; i < cards.length; i++) {
-				//make frontface class with random background color
+				//assign random color
 				var randomcolor=color[Math.floor(Math.random()*color.length)];
 				$(cards[i]).children().first().css('background-color',randomcolor);
 
-				//make backface class with random background image
+				//assign random image
 				var randomindeximages=Math.floor(Math.random()*images.length);
 				var getimage=images[randomindeximages];
 				$(cards[i]).children().last().css('background-image','url('+getimage+')');
-				//remove the images already assigned
+				//remove assigned images
 				images.splice(randomindeximages,1);
 			};
 
-			//initial temps to hold images and card id
-			tempimages=[];
-			tempcards=[];
-			matchCard=0;
+			//reset match card, points and steps
+			resetmatchCard();
 			currentPoints=0;
 			currentSteps=0;
-			console.log(tempcards);
+			matchdonecards=[];
+			console.log('matchcards: '+matchcards);
 		}
-		
+
+		//reset matchcards
+		var resetmatchCard = function(){
+			matchimages=[];
+			matchcards=[];
+		}
+
 		//auto flip back different cards
 		var autoflipCard =  function(){
-			//set timer for auto flip cards
-			setTimeout(function(){ 
-				//flip card back to show front color and remove 'flipped' marks from cards
-				if(tempimages[0]!==tempimages[1]) {
-					flipCardback();
-					$('.card.flipped').removeClass('flipped');
+			//flip card back to show front color and remove 'flipped' marks from cards
+			if(matchimages[0]!==matchimages[1]) {
+				flipCardback();
+				$('.card.flipped').removeClass('flipped');
+			//if both of matching cards have the same image then no need to flip back and just remove 'flipped' marks from cards
+			} else if(matchimages[0]===matchimages[1]) {
+				$('.card.flipped').removeClass('flipped');
+				currentPoints=currentPoints+1;
+				console.log('currentPoints: '+currentPoints);
+				audio_dogbark.play();
+				console.log(matchcards);
+				for (var i = 0; i < matchcards.length; i++) {
+					matchdonecards.push(matchcards[i]);
+				};
+				console.log(matchdonecards);
+			} 
+			//reset matchcards
+			resetmatchCard();
+			//update game status
+			currentSteps=currentSteps+1;
+			updateGameStatus(currentPoints,currentSteps);
+		}
 
-				//if both of matching cards have the same image then no need to flip back and just remove 'flipped' marks from cards
-				} else if(tempimages[0]===tempimages[1]) {
-					$('.card.flipped').removeClass('flipped');
-					currentPoints=currentPoints+1;
-					console.log('currentPoints: '+currentPoints);
-				} 
+		//check if still have steps while math the enough number cards
+		var checkWin = function() {
+			if ((currentSteps<=totalSteps)&&(currentPoints>=winPoints)){
+				audio_wingame.play();
+				//remove cards and update game status and show the start card again
+				$('.card').hide('slow');
+				$('.gamestatus').html('<br>You win the game! <br><br> Want to play again?')
+				$('#start').show("slow");
+				$('#levelmenu').show("slow");
+			}
+		}
 
-				//reset matchCard
-				matchCard=0;
-				console.log('matchCard: '+matchCard);
-				tempimages=[];
-				console.log('tempimages: '+tempimages);
-				currentSteps=currentSteps+1;
-				console.log('currentSteps: '+currentSteps);
-				tempcards=[];
+		//check if outrun the steps
+		var checkLose = function() {
+			if ((currentSteps>=totalSteps)&&(currentPoints<winPoints)){
+				audio_losegame.play();
+				//remove cards and update game status and show the start card again
+				$('.card').hide('slow');
+				$('.gamestatus').html('<br>You lose the game! <br><br> Try again!')
+				$('#start').show("slow");
+				$('#levelmenu').show("slow");
+			}
+		}
 
-				//update game status
-				updateGameStatus(currentPoints,totalSteps);
-			}, 800);
+		//check the clicked card is already matched
+		var checkMatchdonecards = function() {
+			console.log('check if matched')
+			if(matchdonecards.length>=2) {
+				for (var i = 0; i < matchdonecards.length; i++) {
+					if (matchcards[matchcards.length-1]===matchdonecards[i]) {
+						return true
+					} else{
+						return false
+					};
+				};
+			} else {
+				return false
+			};
 		}
 		
 		//click to start card to reset cards
 		$('#start').on('click',function(){
+			audio_assigncard.play();
 			//hide start card during the game
 			$('#start').hide("slow");
+			$('#levelmenu').hide("slow");
 			//show cards
+			$('.card').show('slow');
 			$('.card').children().show('slow');
 			resetCard();
 		});
 
 		//click cards to trigger matching functions
 		$('.card').on('click',function(){
-			//check if steps run out
-			if ((currentSteps<totalSteps)&&currentPoints<winPoints){
-				//check if trigger the first matching card
-				if( tempcards.length<2) {
 
+			var temp=$(this).attr('id');
+			//check if this card matched yet
+			if(!matchdonecards.includes(temp)) {
+				console.log('this card not matched yet!');
+				//only trigger two match cards
+				if( matchcards.length<2) {
 					//get the triggered card id
-					tempcards.push($(this).attr('id'));
-					console.log(tempcards);
-					console.log(tempcards.length);
-					
-					//mark the first matching card as 'flipped card' and flip card front to show back image
+					matchcards.push($(this).attr('id'));
+					console.log(matchcards);
+					console.log(matchdonecards);
+					//mark the matching card as 'flipped card' to show image
 					$(this).addClass('flipped');
 					flipCardfront();
-					
-					//count the first card
-					matchCard=matchCard+1;
-					console.log('matchCard: '+matchCard);
-					
-					//get the first triggered card back image
-					tempimages.push($(this).children().last().css('background-image'));
-					console.log('tempimages: '+tempimages);
-
-					//check if trigger the second matching card
-					if((tempcards.length>=2)&&(tempcards[1]!==tempcards[0])){
-						
-						//mark the second card and flip it to show the back image
-						$(this).addClass('flipped');
-						flipCardfront();
-						
-						//count the second card
-						matchCard=matchCard+1;
-						console.log('matchCard: '+matchCard);
-						
-						//get the second triggered card back image
-						tempimages.push($(this).children().last().css('background-image'));
-						console.log('tempimages: '+tempimages);
-						
-						//set timer to auto flip back different cards
-						autoflipCard();
-
-						//no count if the second triggered card is the same as the first one
-					}	else if((tempcards.length>=2)&&(tempcards[1]===tempcards[0])){
+					//get the triggered card image
+					matchimages.push($(this).children().last().css('background-image'));
+					console.log('matchimages: '+matchimages);
+					//check if the second match card is different
+					if((matchcards.length>=2)&&(matchcards[1]!==matchcards[0])){
+						//set timer for auto flip cards
+						setTimeout(function(){ 
+							autoflipCard();
+							checkWin();
+							checkLose();
+						}, 800);
+						//check if the second match card is the same
+					}	else if((matchcards.length>=2)&&(matchcards[1]===matchcards[0])){
 						alert('The same card! Pick another one')
-						tempcards.pop();
-						tempimages.pop();
-						matchCard=matchCard-1;
+						matchcards.pop();
+						matchimages.pop();
 					}
-				}//
-
-				//check if still have steps while math the enough number cards
-			} else if ((currentSteps<totalSteps)&&(currentPoints>=winPoints)){
-				//remove cards and update game status and show the start card again
-				$('.card').children().hide('slow');
-				images=[];
-				$('.gamestatus').html('<br>You win the game! <br><br> Want to play again?')
-				$('#start').show("slow");
-
-				//check if outrun the steps
+				}//only trigger two matching cards
 			} else {
-				//remove cards and update game status and show the start card again
-				$('.card').children().hide('slow');
-				images=[];
-				$('.gamestatus').html('<br>You lose the game! <br><br> Try again!')
-				$('#start').show("slow");
-			} //check if steps run out
+				alert('this card already matched!');
+			}//check if this card matched yet
 		});
-
 	}
 
 	$(document).ready(function(){
