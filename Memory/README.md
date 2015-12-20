@@ -28,10 +28,13 @@ Memory, also known as Match Match, Pelmanism, Shinkei-suijaku, Pexeso or simply 
 - Each card has a random color on the front and graphic of 8 pairs of puppy images on the back
 - Clicking on a card to flip the card and show a puppy image
 - Don't be confused by the card front color! They are not related to puppy images
-- The first flipped card will be stay flipped until you flip the second one
-- If these flipped card have different puppy images, these flipped cards will be flipped back automatically
-- If these flipped card have the same puppy images, these flipped cards will stay flipped during the game
-- Each pair of same puppy image cards will give players a  points
+- If flip a card which has been pair matched, players will be asked to flip another card
+- The first flipped card will be stay flipped at first
+- If the second flipped card is the same card as the first flipped card, players will be asked to flip another card
+- If the second flipped card has the different puppy images, these two flipped cards will be flipped back automatically
+- If  the second flipped card have the same puppy images, these two flipped cards will stay flipped during the game as one pair of matched cards
+- One pair of matched cards will give players a  points and game status card will be updated the current points players get
+- After flip the second cards, one step will be counted and game status card will be updated the remaining steps
 - If players current points are the same as win points, players win the game
 - If players run out the steps, players lose the game
 - Game status card will update game status of each step of game 
