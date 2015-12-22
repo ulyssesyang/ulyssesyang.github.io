@@ -40,3 +40,8 @@ Memory, also known as Match Match, Pelmanism, Shinkei-suijaku, Pexeso or simply 
 - Game status card will update game status of each step of game 
 - All playing cards will disappear, difficulty menu and Start card will be shown again
 
+#### Game Material Source
+
+- Audio source: https://freesound.org/
+- Puppies images: http://www.cartoonizemypet.com/
+
