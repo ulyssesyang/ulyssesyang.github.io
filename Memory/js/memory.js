@@ -57,12 +57,11 @@
 		//difficulty level menu
 		var levelmenu = $(".levelmenu");
 	  levelmenu.hover(function(event){
-	  		event.stopPropagation();
 	  		$('.levelmenu ul').children('a').addClass("hover");
 	  		$('.ChooseDifficulty').show();
 	  		audio_mouseover.play();
-	  }, function(){
 	  		event.stopPropagation();
+	  }, function(){
 	  		if($('.levelmenu ul').hasClass('hover')!==true){
 	  			$('.levelmenu ul').children('a').removeClass("hover");
 	    		$('.ChooseDifficulty').delay(1000).hide(0);
@@ -70,6 +69,7 @@
 	  			$('.levelmenu ul').children('a').removeClass("hover");
 	    		$('.ChooseDifficulty').delay(1000).hide(0);
 	  		}
+	  		event.stopPropagation();
 	  });
 
 	  //choose difficulty level
@@ -105,7 +105,6 @@
 			//reset card property
 			$('.cardfront').css({'transform':''},{'background-image':''},{'background-color':''});
 			$('.cardback').css({'transform':''},{'background-image':''},{'background-color':''});
-			console.log('reset!');
 
 			//reset image
 			images=['img/1.png','img/2.png','img/3.png','img/4.png',
@@ -132,7 +131,6 @@
 			currentPoints=0;
 			currentSteps=0;
 			matchdonecards=[];
-			console.log('matchcards: '+matchcards);
 		}
 
 		//reset matchcards
@@ -151,13 +149,10 @@
 			} else if(matchimages[0]===matchimages[1]) {
 				$('.card.flipped').removeClass('flipped');
 				currentPoints=currentPoints+1;
-				console.log('currentPoints: '+currentPoints);
 				audio_dogbark.play();
-				console.log(matchcards);
 				for (var i = 0; i < matchcards.length; i++) {
 					matchdonecards.push(matchcards[i]);
 				};
-				console.log(matchdonecards);
 			} 
 			//reset matchcards
 			resetmatchCard();
@@ -192,7 +187,6 @@
 
 		//check the clicked card is already matched
 		var checkMatchdonecards = function() {
-			console.log('check if matched')
 			if(matchdonecards.length>=2) {
 				for (var i = 0; i < matchdonecards.length; i++) {
 					if (matchcards[matchcards.length-1]===matchdonecards[i]) {
@@ -225,19 +219,15 @@
 			var temp=$(this).attr('id');
 			//check if this card matched yet
 			if(!matchdonecards.includes(temp)) {
-				console.log('this card not matched yet!');
 				//only trigger two match cards
 				if( matchcards.length<2) {
 					//get the triggered card id
 					matchcards.push($(this).attr('id'));
-					console.log(matchcards);
-					console.log(matchdonecards);
 					//mark the matching card as 'flipped card' to show image
 					$(this).addClass('flipped');
 					flipCardfront();
 					//get the triggered card image
 					matchimages.push($(this).children().last().css('background-image'));
-					console.log('matchimages: '+matchimages);
 					//check if the second match card is different
 					if((matchcards.length>=2)&&(matchcards[1]!==matchcards[0])){
 						//set timer for auto flip cards
@@ -248,14 +238,11 @@
 						}, 800);
 						//check if the second match card is the same
 					}	else if((matchcards.length>=2)&&(matchcards[1]===matchcards[0])){
-						alert('The same card! Pick another one')
 						matchcards.pop();
 						matchimages.pop();
 					}
 				}//only trigger two matching cards
-			} else {
-				alert('this card already matched!');
-			}//check if this card matched yet
+			} 
 		});
 	}
 
