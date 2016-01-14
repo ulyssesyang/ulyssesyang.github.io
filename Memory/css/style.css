@@ -154,5 +154,6 @@ ul.ChooseDifficulty {
 .cardback {
   -webkit-transform: rotateY(-180deg);
           transform: rotateY(-180deg);
+  -webkit-transform: translateZ(0);
 }
 
