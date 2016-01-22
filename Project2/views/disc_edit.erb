@@ -18,10 +18,10 @@
 		<div class="input-row">
 			<input class="button" type="submit" value="Submit" />
 		</div>
-		<div class="input-row">
-			<input type="hidden" name="_method" value="delete">
-	    <button class="button" type="submit">Delete</button>
-		</div>
+	</form>
+	<form method="post" action="/forum/<%= @topic_name %>/<%= @discs.first['id'] %>/delete"> 
+		<input type="hidden" name="_method" value="delete">
+		<button class="button" type="submit">Delete</button>
 	</form>
 	<a href="/forum/<%= @topic_name %>/<%= @discs.first['id'] %>"><input class="button" type="submit" value="Cancel" /></a>
 	<h3><%=@str%></h3>

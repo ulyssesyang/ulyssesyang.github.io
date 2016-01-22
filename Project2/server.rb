@@ -105,7 +105,7 @@ class Server < Sinatra::Base
 							join topic_user ON topic.id =  topic_user.topic_id
 							join forum_user ON topic_user.user_id = forum_user.id
 				SQL
-    @discs=@@db.exec_params("SELECT * FROM disc LIMIT 5")
+    @discs=@@db.exec_params("SELECT * FROM disc LIMIT 3")
 		erb :forum
 	end
 
@@ -185,12 +185,12 @@ class Server < Sinatra::Base
 
 	delete "/forum/:name/delete" do
 		@topic_name=params[:name]
-		@topics=@@db.exec_params(<<-SQL, [topic_name])
+		@topics=@@db.exec_params(<<-SQL, [@topic_name])
 		  		SELECT topic.*, topic_user.user_id, forum_user.username
 					FROM topic
 							join topic_user ON topic.id =  topic_user.topic_id
 							join forum_user ON topic_user.user_id = forum_user.id
-					WHERE name = $1
+					WHERE topic.name = $1
 				SQL
 		if !current_user
 			@str="Please signup or login!"
@@ -253,20 +253,24 @@ class Server < Sinatra::Base
 					WHERE disc.id = $1
 				SQL
     @comments=@@db.exec_params(<<-SQL,[disc_id])
-    	SELECT * FROM comment WHERE disc_id = $1
+    			SELECT comment.*, forum_user.username, disc.name AS disc_name
+					FROM comment
+							join forum_user ON forum_user.id =  comment.user_id
+							join disc ON comment.disc_id = disc.id
+					WHERE disc.id = $1
     	SQL
 		erb :disc
 	end
 
 	get "/forum/:name/:discid/editdisc" do
 		@topic_name=params[:name]
-		disc_id=params[:discid]
+		disc_id=params[:discid].to_i
 		@discs=@@db.exec_params(<<-SQL, [disc_id])
 		  		SELECT disc.*, forum_user.username, topic.name AS topic_name
 					FROM disc
 							join forum_user ON forum_user.id =  disc.user_id
 							join topic ON disc.topic_id = topic.id
-					WHERE id = $1
+					WHERE disc.id = $1
 				SQL
 		if !current_user
 			@str="Please signup or login!"
@@ -290,13 +294,13 @@ class Server < Sinatra::Base
 
 	delete "/forum/:name/:discid/delete" do
 		@topic_name=params[:name]
-		disc_id=params[:discid]
+		disc_id=params[:discid].to_i
 		@discs=@@db.exec_params(<<-SQL, [disc_id])
 		  		SELECT disc.*, forum_user.username, topic.name AS topic_name
 					FROM disc
 							join forum_user ON forum_user.id =  disc.user_id
 							join topic ON disc.topic_id = topic.id
-					WHERE id = $1
+					WHERE disc.id = $1
 				SQL
 		if !current_user
 			@str="Please signup or login!"
@@ -313,21 +317,25 @@ class Server < Sinatra::Base
 
 	get "/forum/:name/:discid/addcomm" do
 		@topic_name=params[:name]
-		disc_id=params[:discid].to_i
+		@disc_id=params[:discid].to_i
 		if !current_user
 			@str="Please signup or login!"
 			redirect "/welcome"
 		else
-	    @discs=@@db.exec_params(<<-SQL, [disc_id])
+	    @discs=@@db.exec_params(<<-SQL, [@disc_id])
 			  		SELECT disc.*, forum_user.username, topic.name AS topic_name
 						FROM disc
 								join forum_user ON forum_user.id =  disc.user_id
 								join topic ON disc.topic_id = topic.id
 						WHERE disc.id = $1
 					SQL
-	    @comments=@@db.exec_params(<<-SQL,[disc_id])
-	    	SELECT * FROM comment WHERE disc_id = $1
-	    	SQL
+	    @comments=@@db.exec_params(<<-SQL,[@disc_id])
+    			SELECT comment.*, forum_user.username, disc.name AS disc_name
+					FROM comment
+							join forum_user ON forum_user.id =  comment.user_id
+							join disc ON comment.disc_id = disc.id
+					WHERE disc.id = $1
+    	SQL
 			erb :comm_add
 		end
 	end
@@ -335,7 +343,6 @@ class Server < Sinatra::Base
 	post "/forum/:name/:discid/addcomm" do
 		@topic_name=params[:name]
 		@disc_id=params[:discid].to_i
-		binding.pry
 		if !current_user
 			redirect "/welcome"
 		else
@@ -344,61 +351,62 @@ class Server < Sinatra::Base
 	  		INSERT INTO comment (description, img_url, user_id, disc_id)
 	  		VALUES ($1, $2, $3, $4) RETURNING id
 			SQL
-			binding.pry
 			redirect "/forum/#{params[:name]}/#{params[:discid]}"
 		end
 	end
 
-	get "/forum/:name/:discid/editcomm" do
+	get "/forum/:name/:discid/:commid/editcomm" do
 		@topic_name=params[:name]
-		disc_id=params[:discid]
-		@comments=@@db.exec_params(<<-SQL, [disc_id])
-		  		SELECT comment.*, forum_user.username, topic.name AS topic_name
+		@disc_id=params[:discid].to_i
+		@comm_id=params[:commid].to_i
+		@comments=@@db.exec_params(<<-SQL,[@comm_id])
+    			SELECT comment.*, forum_user.username, disc.name AS disc_name
 					FROM comment
 							join forum_user ON forum_user.id =  comment.user_id
 							join disc ON comment.disc_id = disc.id
-					WHERE id = $1
-				SQL
+					WHERE comment.id = $1
+    	SQL
 		if !current_user
 			@str="Please signup or login!"
 			redirect "/welcome"
 		elsif current_user['id']!=@comments.first['user_id']
 			@str="You are not the creator of this topic!"
-			redirect "/forum/#{params[:name]}"
+			redirect "/forum/#{params[:name]}/#{params[:discid]}"
 		else
 			erb :comm_edit
 		end
 	end
 
-	put "/forum/:name/:discid/editcomm" do
+	put "/forum/:name/:discid/:commid/editcomm" do
 		@topic_name=params[:name]
-		disc_id=params[:discid]
-    @@db.exec_params(<<-SQL, [params["description"],params["img_url"],disc_id])
+		@disc_id=params[:discid].to_i
+		@comm_id=params[:commid].to_i
+    @@db.exec_params(<<-SQL, [params["description"],params["img_url"],@comm_id])
 	  		UPDATE comment SET description=$1, img_url=$2, edit_time=CURRENT_TIMESTAMP WHERE id=$3
 			SQL
 		redirect "/forum/#{params[:name]}/#{params[:discid]}"
 	end
 
-	delete "/forum/:name/:discid/:commid" do
+	delete "/forum/:name/:discid/:commid/delete" do
 		@topic_name=params[:name]
-		disc_id=params[:discid]
-		@comm_id=params[:commid]
-		@discs=@@db.exec_params(<<-SQL, [disc_id])
-		  		SELECT disc.*, forum_user.username, topic.name AS topic_name
-					FROM disc
-							join forum_user ON forum_user.id =  disc.user_id
-							join topic ON disc.topic_id = topic.id
-					WHERE id = $1
-				SQL
+		@disc_id=params[:discid].to_i
+		@comm_id=params[:commid].to_i
+		@comments=@@db.exec_params(<<-SQL,[@comm_id])
+    			SELECT comment.*, forum_user.username, disc.name AS disc_name
+					FROM comment
+							join forum_user ON forum_user.id =  comment.user_id
+							join disc ON comment.disc_id = disc.id
+					WHERE comment.id = $1
+    	SQL
 		if !current_user
 			redirect "/welcome"
-		elsif current_user['id']!=@discs.first['user_id']
+		elsif current_user['id']!=@comments.first['user_id']
 			@str="You are not the creator of this comment!"
-			erb :disc
+			redirect "/forum/#{params[:name]}/#{params[:discid]}"
 		else
-			@@db.exec_params("DELETE FROM comment WHERE id = $1",[disc_id])
+			@@db.exec_params("DELETE FROM comment WHERE id = $1",[@comm_id])
 			redirect "/forum/#{params[:name]}/#{params[:discid]}"
 		end
 	end
-	
+
 end

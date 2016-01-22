@@ -9,7 +9,7 @@
 			<h3><%= topic['description'] %></h3>
 			<h3>Created by <%= topic['username'] %></h3>
 			<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
-			<form method="post" action="/forum/<%=topic['name']%>"> 
+			<form method="post" action="/forum/<%=topic['name']%>/delete"> 
   			<input type="hidden" name="_method" value="delete">
   			<button class="button" type="submit">Delete</button>
 			</form>
@@ -22,7 +22,7 @@
 					<h4> <%= disc['description']%> </h4>
 					<h4>Created by <%= topic['username'] %></h3>
 					<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
-					<form method="post" action="/forum/<%=topic['name']%>/<%=disc['id']%>"> 
+					<form method="post" action="/forum/<%=topic['name']%>/<%=disc['id']%>/delete"> 
 	    			<input type="hidden" name="_method" value="delete">
 	    			<button class="button" type="submit">Delete</button>
 					</form>

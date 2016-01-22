@@ -1,36 +1,36 @@
 
 <div class="forum">
 	<h2>Topic List</h2>
-	<ul class="disc">
 	<% @discs.each do |disc| %>
+	<ul class="disc">
 		<li class="disc_list">
 			<h2><a href="/forum/<%= disc['topic_name'] %>"><%= disc['name'] %></a></h2>
 			<!-- <a href="/forum/<%= disc['topic_name'] %>/<%= disc['id'] %>"><img src="<%= disc['img_url']%>" ></a> -->
 			<h3><%= disc['description'] %></h3>
 			<h3>Created by <%= disc['username'] %></h3>
 			<a href="/forum/<%= disc['topic_name'] %>/editdisc"> <input class="button" type="submit" value="Edit" /> </a>
-			<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>"> 
+			<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/delete"> 
   			<input type="hidden" name="_method" value="delete">
   			<button class="button" type="submit">Delete</button>
 			</form>
 			<h3><a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/addcomm">Add Comment</a></h3>
 			<h2><a href="/forum/<%= disc['topic_name'] %>/adddisc">Add Discussion</a></h2>
+			<% @comments.each do |comment| %>
 			<ul class="disc_list">
-				<% @comments.each do |comment| %>
 				<li class="disc_list">
-					<% if comment['topic_id']===disc['id']%>
+					<% if comment['disc_id']===disc['id']%>
 					<h4> <%= comment['description']%> </h4>
-					<h4>Created by <%= disc['username'] %></h3>
+					<h4>Created by <%= comment['username'] %></h3>
 					<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/addcomm"><input class="button" type="submit" value="Join Comment"/></a>
-					<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/editcomm"><input class="button" type="submit" value="Edit Comment"/></a>
-					<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/comment['id']"> 
+					<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%=comment['id']%>/editcomm"><input class="button" type="submit" value="Edit Comment"/></a>
+					<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%= comment['id'] %>/delete"> 
 	    			<input type="hidden" name="_method" value="delete">
 	    			<button class="button" type="submit">Delete</button>
 					</form>
 					<%end%>
 				</li>
-				<%end%>
 			</ul>
+			<%end%>
 		</li>
 	<%end%>
 	</ul>		

@@ -9,16 +9,16 @@
 			<h3><%= topic['description'] %></h3>
 			<h3>Created by <%= topic['username'] %></h3>
 			<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
-			<% @discs.each do |disc| %>
 			<ul class="disc">
-				<li class="disc_list">
-					<% if disc['topic_id']===topic['id']%>
-					<h3> <a href="/forum/<%= topic['name'] %>/<%= disc['id']%>"> <%= disc['name']%> </a></h3>
-					<h4> <%= disc['description']%> </h4>
-					<%end%>
-				</li>
-			</ul>
+			<% @discs.each do |disc| %>
+					<li class="disc_list">
+				<% if disc['topic_id']===topic['id']%>
+						<h3> <a href="/forum/<%= topic['name'] %>/<%= disc['id']%>"> <%= disc['name']%> </a></h3>
+						<h4> <%= disc['description']%> </h4>
+				<%end%>
+					</li>
 			<%end%>
+			</ul>
 		</li>
 	</ul>		
 	<%end%>
