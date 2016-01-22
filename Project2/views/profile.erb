@@ -1,0 +1,53 @@
+
+<div class="profile">
+	<h2><%= current_user['username'] %>'s Profile</h2>
+	<img src="<%= current_user['image']%>" >
+	<br>
+	<div class="main_content">
+		<form class="edit" action="/profile" method="post">
+			<div class="input-row">
+				<label for="username">Username: </label>
+				<input type="hidden" name="_method" value="put">
+  			<input type="text" name="username"  id="username" value="<%= current_user['username'] %>" />
+			</div>
+			<div class="input-row">
+				<label for="email">Email: </label>
+				<input type="hidden" name="_method" value="put">
+  			<input type="email" name="email"  id="email" value="<%= current_user['email'] %>" />
+			</div>
+			<div class="input-row">
+				<label for="fname">First Name: </label>
+				<input type="hidden" name="_method" value="put">
+  			<input type="text" name="fname"  id="fname" value="<%= current_user['fname'] %>" />
+			</div>
+			<div class="input-row">
+				<label for="lname">Last Name: </label>
+				<input type="hidden" name="_method" value="put">
+  			<input type="text" name="lname"  id="lname" value="<%= current_user['lname'] %>" />
+			</div>
+			<div class="input-row">
+				<input type="hidden" name="_method" value="put">
+  			<label for="gender">Gender: </label>
+  			<input type="radio" name="gender" value="M" checked> Male<br>
+  			<input type="radio" name="gender" value="F"> Female<br>
+  			<input type="radio" name="gender" value=""> Other
+			</div>
+			<div class="input-row">
+				<label for="phone">Phone: </label>
+				<input type="hidden" name="_method" value="put">
+  			<input type="text" name="phone"  id="phone" value="<%= current_user['phone'] %>" />
+			</div>
+			<div class="input-row">
+				<label for="img_url">Image URL: </label>
+				<input type="hidden" name="_method" value="put">
+  			<input type="img_url" name="img_url"  id="img_url" value="<%= current_user['img_url'] %>" />
+			</div>
+			<div class="input-row">
+				<input class="button" type="submit" value="Update" />
+			</div>
+		</form>
+		<a href="/forum"><button class="button">Cancel</button></a>
+		<a href="/logout"><button class="button">Logout</button></a>
+	</div>
+	<br>
+</div>

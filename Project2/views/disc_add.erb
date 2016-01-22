@@ -1,0 +1,21 @@
+<div class="disc">
+	<form class="add" action="/forum/<%= @topic_name %>/adddisc" method="post">
+		<div class="input-row">
+			<label for="disc_name">Name: </label>
+			<input type="text" name="disc_name"  id="disc_name" />
+		</div>
+		<div class="input-row">
+			<label for="description">Description: </label>
+			<textarea name="description" id="description"></textarea>
+		</div>
+		<div class="input-row">
+			<label for="img_url">Image Url: </label>
+			<input name="img_url" id="img_url" />
+		</div>
+		<div class="input-row">
+			<input class="button" type="submit" value="Submit" />
+		</div>
+	</form>
+	<a href="/forum/<%= @topic_name %>"><input class="button" type="submit" value="Cancel" /></a>
+	<h3><%=@str%></h3>
+</div>

@@ -1,0 +1,37 @@
+<h2><a href="/forum/addtopic">Add Topic</a></h2>
+<div class="forum">
+	<h2>Topic List</h2>
+	<ul class="topic">
+	<% @topics.each do |topic| %>
+		<li class="topic_list">
+			<h2><a href="/forum/<%= topic['name'] %>"><%= topic['name'] %></a></h2>
+			<!-- <a href="/forum_user/<%= topic['name'] %>"><img src="<%= topic['img_url']%>" ></a> -->
+			<h3><%= topic['description'] %></h3>
+			<h3>Created by <%= topic['username'] %></h3>
+			<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
+			<form method="post" action="/forum/<%=topic['name']%>"> 
+  			<input type="hidden" name="_method" value="delete">
+  			<button class="button" type="submit">Delete</button>
+			</form>
+			<h2><a href="/forum/<%= topic['name'] %>/adddisc">Add Discussion</a></h2>
+			<ul class="disc">
+				<% @discs.each do |disc| %>
+				<li class="disc_list">
+					<% if disc['topic_id']===topic['id']%>
+					<h3> <a href="/forum/<%= topic['name'] %>/<%= disc['id']%>"> <%= disc['name']%> </a></h3>
+					<h4> <%= disc['description']%> </h4>
+					<h4>Created by <%= topic['username'] %></h3>
+					<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
+					<form method="post" action="/forum/<%=topic['name']%>/<%=disc['id']%>"> 
+	    			<input type="hidden" name="_method" value="delete">
+	    			<button class="button" type="submit">Delete</button>
+					</form>
+					<%end%>
+				</li>
+				<%end%>
+			</ul>
+		</li>
+	<%end%>
+	</ul>		
+	<h3><%=@str%></h3>
+</div>
