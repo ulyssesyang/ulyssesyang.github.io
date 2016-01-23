@@ -1,26 +1,28 @@
-<h2><a href="/forum/addtopic">Add Topic</a></h2>
-<div class="forum">
-	<h2>Topic List</h2>
-	<% @topics.each do |topic| %>
-	<ul class="topic">
-		<li class="topic_list">
-			<h2><a href="/forum/<%= topic['name'] %>"><%= topic['name'] %></a></h2>
-			<!-- <a href="/forum_user/<%= topic['name'] %>"><img src="<%= topic['img_url']%>" ></a> -->
-			<h3><%= topic['description'] %></h3>
-			<h3>Created by <%= topic['username'] %></h3>
-			<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
-			<ul class="disc">
-			<% @discs.each do |disc| %>
-					<li class="disc_list">
-				<% if disc['topic_id']===topic['id']%>
-						<h3> <a href="/forum/<%= topic['name'] %>/<%= disc['id']%>"> <%= disc['name']%> </a></h3>
-						<h4> <%= disc['description']%> </h4>
+<div class="col-sm-8 text-left"> 
+	<div class="forum">
+		<h2>Topic List</h2>
+		<a href="/forum/addtopic"><button type="button" class="btn btn-default">Add Topic</button></a>
+		<div class="container">
+		<% @topics.each do |topic| %>
+			<li class="topic_list">
+				<h2><a href="/forum/<%= topic['name'] %>"><%= topic['name'] %></a></h2>
+				<!-- <a href="/forum_user/<%= topic['name'] %>"><img src="<%= topic['img_url']%>" ></a> -->
+				<h3><%= topic['description'] %></h3>
+				<h5>Discussions: <span class="badge"><%=topic['disc_count']%></span> Created by:<a href="/view/<%= topic['username'] %>"> <%= topic['username'] %> </a></h5>
+				<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
+				<ul class="disc">
+				<% @discs.each do |disc| %>
+					<% if disc['topic_id']===topic['id']%>
+						<li class="disc_list">
+							<h3> <a href="/forum/<%= topic['name'] %>/<%= disc['id']%>"> <%= disc['name']%> </a></h3>
+							<h4> <%= disc['description']%> </h4>
+						</li>
+					<%end%>
 				<%end%>
-					</li>
-			<%end%>
-			</ul>
-		</li>
-	</ul>		
-	<%end%>
-	<h3><%=@str%></h3>
+				</ul>
+			</li>
+		<%end%>
+		</div>		
+		<h4 class="alert alert-danger"><%=@str%></h4>
+	</div>
 </div>

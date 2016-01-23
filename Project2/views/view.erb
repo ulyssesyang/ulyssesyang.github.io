@@ -1,0 +1,11 @@
+<div class="view">
+	<% @users.each do |user| %>
+	  <h2><%= user['username'] %></h2>
+		<a href="#<%= user['id'] %>" data-toggle="collapse">
+		  <img src="<%= user['img_url']%>" class="img-circle person" width="255" height="255">
+		</a>
+		<div id="<%= user['id'] %>" class="collapse">
+		  <a href="#contact"><p><span class="glyphicon glyphicon-envelope"></span> <%= user['email'] %> </p></a>
+		</div>
+	<% end%>
+</div>

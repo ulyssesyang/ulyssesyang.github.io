@@ -1,5 +1,5 @@
-
-<div class="forum">
+<div class="col-sm-8 text-left"> 
+<div class="disc">
 	<h2>Topic List</h2>
 	<% @discs.each do |disc| %>
 	<ul class="disc">
@@ -8,7 +8,7 @@
 			<!-- <a href="/forum/<%= disc['topic_name'] %>/<%= disc['id'] %>"><img src="<%= disc['img_url']%>" ></a> -->
 			<h3><%= disc['description'] %></h3>
 			<h3>Created by <%= disc['username'] %></h3>
-			<a href="/forum/<%= disc['topic_name'] %>/editdisc"> <input class="button" type="submit" value="Edit" /> </a>
+			<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/editdisc"> <input class="button" type="submit" value="Edit" /> </a>
 			<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/delete"> 
   			<input type="hidden" name="_method" value="delete">
   			<button class="button" type="submit">Delete</button>
@@ -19,8 +19,8 @@
 			<ul class="disc_list">
 				<li class="disc_list">
 					<% if comment['disc_id']===disc['id']%>
-					<h4> <%= comment['description']%> </h4>
-					<h4>Created by <%= comment['username'] %></h3>
+					<h3> <%= comment['description']%> </h3>
+					<h4>Created by <%= comment['username'] %></h4>
 					<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/addcomm"><input class="button" type="submit" value="Join Comment"/></a>
 					<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%=comment['id']%>/editcomm"><input class="button" type="submit" value="Edit Comment"/></a>
 					<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%= comment['id'] %>/delete"> 
@@ -34,5 +34,6 @@
 		</li>
 	<%end%>
 	</ul>		
-	<h3><%=@str%></h3>
+	<h4 class="alert alert-danger"><%=@str%></h4>
+</div>
 </div>

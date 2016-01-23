@@ -2,6 +2,7 @@ require 'pg'
 require 'pry'
 require "sinatra/base"
 require "bcrypt"
+require_relative 'models/warning'
 
 class Server < Sinatra::Base
 	enable :sessions
@@ -30,7 +31,7 @@ class Server < Sinatra::Base
 		get_user = @@db.exec_params("SELECT * FROM forum_user WHERE username=$1",[params["username"]])
 		get_email = @@db.exec_params("SELECT * FROM forum_user WHERE email=$1",[params["email"]])
 		if get_user.values.length>0
-			@str="The username has already existed! Please choose another username!"
+			@str=Warningmsg.account_exist
 			erb :welcome
 		elsif get_email.values.length>0
 			@str="The email has already existed! Please use other email!"
@@ -64,7 +65,27 @@ class Server < Sinatra::Base
 		end
 	end
 
-	get "/profile" do
+	get "/view" do
+		if !current_user
+			redirect "/welcome"
+		else
+    	id=current_user['id']
+    	@users=@@db.exec_params("SELECT * FROM forum_user")
+    	erb :view
+		end
+  end
+
+  get "/view/:name" do
+		if !current_user
+			redirect "/welcome"
+		else
+    	id=current_user['id']
+    	@users=@@db.exec_params("SELECT * FROM forum_user WHERE username = $1",[params[:name]])
+    	erb :view
+		end
+  end
+
+  get "/profile" do
 		if !current_user
 			redirect "/welcome"
 		else
@@ -100,12 +121,13 @@ class Server < Sinatra::Base
 
 	get "/forum" do
 		@topics=@@db.exec_params(<<-SQL)
-		  		SELECT topic.*, forum_user.username
-					FROM topic
-							join topic_user ON topic.id =  topic_user.topic_id
-							join forum_user ON topic_user.user_id = forum_user.id
+		  	SELECT (SELECT count(*) FROM disc WHERE disc.topic_id=topic.id) AS disc_count, topic.*, forum_user.username
+				FROM topic
+				join topic_user ON topic.id =  topic_user.topic_id
+				join forum_user ON topic_user.user_id = forum_user.id
+				ORDER BY disc_count DESC
 				SQL
-    @discs=@@db.exec_params("SELECT * FROM disc LIMIT 3")
+    @discs=@@db.exec_params("SELECT * FROM disc ")
 		erb :forum
 	end
 
@@ -149,9 +171,13 @@ class Server < Sinatra::Base
 							join forum_user ON topic_user.user_id = forum_user.id
 					WHERE name = $1
 				SQL
-    @discs=@@db.exec_params(<<-SQL,[topic_name])
-    	SELECT * FROM disc WHERE topic_id IN (SELECT id FROM topic WHERE name = $1)
-    	SQL
+    @discs=@@db.exec_params(<<-SQL, [topic_name])
+		  		SELECT disc.*, forum_user.username, topic.name AS topic_name
+					FROM disc
+							join forum_user ON forum_user.id =  disc.user_id
+							join topic ON disc.topic_id = topic.id
+					WHERE topic.name = $1
+				SQL
 		erb :topic
 	end
 

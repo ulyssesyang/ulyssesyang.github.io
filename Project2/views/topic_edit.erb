@@ -1,21 +1,22 @@
+<div class="col-sm-8 text-center"> 
 <div class="topic">
-	<form class="edit" action="/forum/<%= @topics.first['name'] %>/edittopic" method="post">
-		<div class="input-row">
+	<form role="form" class="edit" action="/forum/<%= @topics.first['name'] %>/edittopic" method="post">
+		<div class="form-group">
 				<label for="new_name">Topic Name: </label>
 				<input type="hidden" name="_method" value="put">
   			<input type="text" name="new_name"  id="new_name" value="<%= @topics.first['name'] %>" />
 		</div>
-		<div class="input-row">
+		<div class="form-group">
 			<label for="description">Description: </label>
 			<input type="hidden" name="_method" value="put">
 			<textarea name="description" id="description"><%= @topics.first['description'] %></textarea>
 		</div>
-		<div class="input-row">
+		<div class="form-group">
 				<label for="img_url">Image URL: </label>
 				<input type="hidden" name="_method" value="put">
   			<input type="img_url" name="img_url"  id="img_url" value="<%= @topics.first['img_url'] %>" />
 		</div>
-		<div class="input-row">
+		<div class="form-group">
 			<input class="button" type="submit" value="Submit" />
 		</div>
 	</form>
@@ -24,5 +25,5 @@
 		<button class="button" type="submit">Delete</button>
 	</form>
 	<a href="/forum/<%= @topics.first['name'] %>"><input class="button" type="submit" value="Cancel" /></a>
-	<h3><%=@str%></h3>
+	<h4 class="alert alert-danger"><%=@str%></h4>
 </div>

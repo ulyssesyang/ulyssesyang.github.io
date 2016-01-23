@@ -1,21 +1,22 @@
+<div class="col-sm-8 text-center"> 
 <div class="topic">
-	<form class="add" action="/forum/addtopic" method="post">
-		<div class="input-row">
+	<form role="form" class="add" action="/forum/addtopic" method="post">
+		<div class="form-group">
 			<label for="name">Name: </label>
 			<input type="text" name="name"  id="name" />
 		</div>
-		<div class="input-row">
+		<div class="form-group">
 			<label for="description">Description: </label>
 			<textarea name="description" id="description"></textarea>
 		</div>
-		<div class="input-row">
+		<div class="form-group">
 			<label for="img_url">Image Url: </label>
 			<input name="img_url" id="img_url" />
 		</div>
-		<div class="input-row">
+		<div class="form-group">
 			<input class="button" type="submit" value="Submit" />
 		</div>
 	</form>
 	<a href="/forum"><input class="button" type="submit" value="Cancel" /></a>
-	<h3><%=@str%></h3>
+	<h4 class="alert alert-danger"><%=@str%></h4>
 </div>
