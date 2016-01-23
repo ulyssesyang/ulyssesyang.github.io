@@ -5,7 +5,8 @@
 		  <img src="<%= user['img_url']%>" class="img-circle person" width="255" height="255">
 		</a>
 		<div id="<%= user['id'] %>" class="collapse">
-		  <a href="#contact"><p><span class="glyphicon glyphicon-envelope"></span> <%= user['email'] %> </p></a>
+		  <a href="#contact"><h5><span class="glyphicon glyphicon-envelope"></span> <%= user['email'] %> </h5></a>
+		  <h5>Discussions: <span class="badge"><%=user['disc_count']%></span> </h5>
 		</div>
 	<% end%>
 </div>

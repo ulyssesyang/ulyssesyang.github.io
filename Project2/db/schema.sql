@@ -27,6 +27,7 @@ CREATE TABLE topic(
   topic_rate INTEGER NOT NULL DEFAULT 0,
   img_url VARCHAR DEFAULT 'http://images.clipartpanda.com/question-mark-black-and-white-Icon-round-Question_mark.jpg',
   user_id INTEGER REFERENCES forum_user(id)
+  CHECK( topic_rate>=0 )
 );
 
 CREATE TABLE topic_user(
@@ -40,10 +41,11 @@ CREATE TABLE disc(
   description	VARCHAR NOT NULL,
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   edit_time TIMESTAMP,
-  topic_rate INTEGER NOT NULL DEFAULT 0,
+  disc_rate INTEGER NOT NULL DEFAULT 0,
   img_url VARCHAR DEFAULT 'http://images.clipartpanda.com/question-mark-black-and-white-Icon-round-Question_mark.jpg',
   user_id INTEGER REFERENCES forum_user(id),
   topic_id INTEGER REFERENCES topic(id)
+  CHECK( disc_rate>=0 )
 );
 
 CREATE TABLE comment(

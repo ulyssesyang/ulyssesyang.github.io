@@ -1,12 +1,10 @@
 <h1>Welcome to YU YANG'S Forum</h1>
-<div class="container text-left">
-  <h2>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
   tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
   quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
   consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
   cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-  proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</h2>
-</div>
+  proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#signup">You are almost there...</button>
 <div id="signup" class="collapse">
   <div class="jumbotron">
@@ -34,8 +32,8 @@
 	<div class="jumbotron">
 		<form class="login" action="/welcome/login" method="post">
 			<div class="form-group">
-				<label for="username">Name: </label>
-				<input type="text" name="username"  id="username" />
+				<label for="login_input">Name/Email: </label>
+				<input type="text" name="login_input"  id="login_input" />
 			</div>
 			<div class="form-group">
 				<label for="password">Password: </label>
@@ -47,7 +45,7 @@
 		</form>
 	</div>
 </div>
+<%=@str%>
 <div class="form-group">
 	<a href="/forum"><button type="button" class="btn btn-default" >Just hanging around...</button></a>
 </div>
-<%=@str%>

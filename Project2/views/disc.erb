@@ -1,39 +1,47 @@
-<div class="col-sm-8 text-left"> 
+<%=@str%>
+<div class="col-sm-8 text-center"> 
 <div class="disc">
-	<h2>Topic List</h2>
+	<h2>Comments Order by Create Dates</h2>
+	<div class="container">
 	<% @discs.each do |disc| %>
-	<ul class="disc">
-		<li class="disc_list">
+		<div class="col-md-12 jumbotron">
 			<h2><a href="/forum/<%= disc['topic_name'] %>"><%= disc['name'] %></a></h2>
-			<!-- <a href="/forum/<%= disc['topic_name'] %>/<%= disc['id'] %>"><img src="<%= disc['img_url']%>" ></a> -->
-			<h3><%= disc['description'] %></h3>
-			<h3>Created by <%= disc['username'] %></h3>
-			<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/editdisc"> <input class="button" type="submit" value="Edit" /> </a>
+			<a href="/forum/<%= disc['topic_name'] %>/<%= disc['id'] %>">
+			<img src="<%= disc['img_url']%> class="img-rounded" width="355" height="auto"" >
+			</a>
+			<h5>
+				Comments: <span class="badge"><%=disc['comm_count']%></span> 
+				Rates: <span class="badge"><%=disc['disc_rate']%></span>
+				Created by:<a href="/view/<%= disc['username'] %>"> <%= disc['username'] %> </a>
+			</h5>
+			<p><%= disc['description'] %></p>
+			<div > 
+				<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/editdisc"> <input class="button" type="submit" value="Edit" /> </a>
+				<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/addrate"> <span class="glyphicon glyphicon-thumbs-up"></span> </a>
+				<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/delrate"> <span class="glyphicon glyphicon-thumbs-down"></span> </a>
+			</div>
 			<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/delete"> 
   			<input type="hidden" name="_method" value="delete">
-  			<button class="button" type="submit">Delete</button>
+  			<button class="btn btn-default" type="submit">Delete</button>
 			</form>
-			<h3><a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/addcomm">Add Comment</a></h3>
-			<h2><a href="/forum/<%= disc['topic_name'] %>/adddisc">Add Discussion</a></h2>
+			</div>
+			<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/addcomm"><button type="btn btn-default" class="btn btn-default">Add Comment</button></a>
 			<% @comments.each do |comment| %>
-			<ul class="disc_list">
-				<li class="disc_list">
-					<% if comment['disc_id']===disc['id']%>
-					<h3> <%= comment['description']%> </h3>
-					<h4>Created by <%= comment['username'] %></h4>
-					<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/addcomm"><input class="button" type="submit" value="Join Comment"/></a>
-					<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%=comment['id']%>/editcomm"><input class="button" type="submit" value="Edit Comment"/></a>
-					<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%= comment['id'] %>/delete"> 
-	    			<input type="hidden" name="_method" value="delete">
-	    			<button class="button" type="submit">Delete</button>
-					</form>
-					<%end%>
-				</li>
-			</ul>
+			<div class="col-md-12">
+				<% if comment['disc_id']===disc['id']%>
+				<p class="jumbotron"> <%= comment['description']%> </p>
+				<h5>Created by: <a href="/view/<%= disc['username'] %>"> <%= comment['username'] %> </a> </h5>
+				<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/addcomm"><button class="btn btn-default" type="submit"/>Join Comment</button></a>
+				<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%=comment['id']%>/editcomm"><button class="btn btn-default" type="submit" />Edit Comment</button></a>
+				<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%= comment['id'] %>/delete"> 
+    			<input type="hidden" name="_method" value="delete">
+    			<button class="btn btn-default" type="submit">Delete</button>
+				</form>
+				<%end%>
+			</div>
 			<%end%>
-		</li>
+		</div>
 	<%end%>
-	</ul>		
-	<h4 class="alert alert-danger"><%=@str%></h4>
+	</div>		
 </div>
 </div>

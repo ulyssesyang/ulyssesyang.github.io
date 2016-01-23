@@ -1,28 +1,52 @@
-<div class="col-sm-8 text-left"> 
+<%=@str%>
+<div class="text-center"> 
 	<div class="forum">
-		<h2>Topic List</h2>
+		<h2>Topics Order by Discussion Numbers</h2>
 		<a href="/forum/addtopic"><button type="button" class="btn btn-default">Add Topic</button></a>
 		<div class="container">
 		<% @topics.each do |topic| %>
-			<li class="topic_list">
+			<div class="col-md-12 jumbotron">
 				<h2><a href="/forum/<%= topic['name'] %>"><%= topic['name'] %></a></h2>
-				<!-- <a href="/forum_user/<%= topic['name'] %>"><img src="<%= topic['img_url']%>" ></a> -->
-				<h3><%= topic['description'] %></h3>
-				<h5>Discussions: <span class="badge"><%=topic['disc_count']%></span> Created by:<a href="/view/<%= topic['username'] %>"> <%= topic['username'] %> </a></h5>
+				<a href="#<%= topic['name'] %>" data-toggle="collapse">
+				<img src="<%= topic['img_url']%>" class="img-rounded" width="355" height="auto">
+				</a>
+				<h5>
+				Discussions: <span class="badge"><%=topic['disc_count']%></span> 
+				Rates: <span class="badge"><%=topic['topic_rate']%></span>
+				Created by:<a href="/view/<%= topic['username'] %>"> <%= topic['username'] %> </a>
+				</h5>
+				<div id="<%= topic['name'] %>" class="collapse">
+					<p><%= topic['description'] %></p>
+				</div>
+				<div> 
 				<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
-				<ul class="disc">
+				<a href="/forum/<%= topic['name'] %>/addrate"> <span class="glyphicon glyphicon-thumbs-up"></span> </a>
+				<a href="/forum/<%= topic['name'] %>/delrate"> <span class="glyphicon glyphicon-thumbs-down"></span> </a>
+				</div>
+				<a href="#<%= topic['id'] %>" data-toggle="collapse"><span class="glyphicon glyphicon-menu-down"></span></a>
+			</div>
+				<div id="<%= topic['id'] %>" class="collapse">
 				<% @discs.each do |disc| %>
 					<% if disc['topic_id']===topic['id']%>
-						<li class="disc_list">
+						<div class="col-md-4">
 							<h3> <a href="/forum/<%= topic['name'] %>/<%= disc['id']%>"> <%= disc['name']%> </a></h3>
-							<h4> <%= disc['description']%> </h4>
-						</li>
+							<a href="#<%= disc['name'] %>" data-toggle="collapse">
+							<img src="<%= disc['img_url']%>" class="img-thumbnail" width="155" height="auto">
+							</a>
+							<h5>
+								Comments: <span class="badge"><%=disc['comm_count']%></span> 
+								Rates: <span class="badge"><%=disc['disc_rate']%></span>
+								Created by:<a href="/view/<%= disc['username'] %>"> <%= disc['username'] %> </a>
+							</h5>
+							<div id="<%= disc['name'] %>" class="collapse">
+							<p class="jumbotron"> <%= disc['description']%> </p>
+							</div>
+						</div>
 					<%end%>
 				<%end%>
-				</ul>
-			</li>
+				</div>
 		<%end%>
 		</div>		
-		<h4 class="alert alert-danger"><%=@str%></h4>
+		<%=@str%>
 	</div>
 </div>

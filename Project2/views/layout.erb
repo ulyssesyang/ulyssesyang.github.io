@@ -18,12 +18,22 @@
 	    </div>
 	    <div class="collapse navbar-collapse" id="myNavbar">
 	      <ul class="nav navbar-nav navbar-right">
+	        <li>
+		        <form class="header" role="form" action="/welcome/search" method="post">
+						  <span class="glyphicon glyphicon-search"></span>
+		        	<label for="search">Search:</label>
+						  <input type="search" name="search" id="search">
+						  <input class="button" type="submit" value="Topics"/>
+						</form>
+	        </li>
 	        <li><a href="/">Welcome</a></li>
 	        <li><a href="/forum">Forum</a></li>
 	        <li><a href="#about">About</a></li>
 	        <li><a href="#contact">CONTACT</a></li>
 	        <li class="dropdown">
-	          <a class="dropdown-toggle" data-toggle="dropdown" href="#"><%= if current_user then current_user["username"] else "visitor" end%>
+	          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+	          <span class="glyphicon glyphicon-user"></span> 
+	          <%= if current_user then current_user["username"] else "visitor" end%>
 	          <span class="caret"></span></a>
 	          <ul class="dropdown-menu">
 	            <li><a href="/view">View</a></li>
@@ -31,7 +41,6 @@
 	            <li><a href="/logout">Logout</a></li> 
 	          </ul>
 	        </li>
-	        <li><a href="#"><span class="glyphicon glyphicon-search"></span></a></li>
 	      </ul>
 	    </div>
 	  </div>
