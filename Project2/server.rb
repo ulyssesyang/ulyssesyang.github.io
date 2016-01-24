@@ -2,6 +2,9 @@ require 'pg'
 require 'pry'
 require "sinatra/base"
 require "bcrypt"
+require "redcarpet"
+
+require_relative 'models/markdown'
 require_relative 'models/warning'
 require_relative 'models/topic'
 
@@ -183,12 +186,21 @@ class Server < Sinatra::Base
 		redirect "/forum"
 	end
 
+	get "/forum/addtopic" do
+		if !current_user
+			@str=Warningmsg.notlogin
+			erb :welcome
+		else
+			erb :topic_add
+		end
+	end
+
 	post "/forum/addtopic" do
 		if !current_user
 			@str=Warningmsg.notlogin
 			erb :welcome
 		else
-			get_topic = @@db.exec_params("SELECT * FROM topic WHERE name=$1",[params["name"]])
+			get_topic = @@db.exec_params("SELECT * FROM topic WHERE LOWER(name)=LOWER($1)",[params["name"]])
 			if get_topic.values.length>0
 				@str=Warningmsg.already_exist
 				erb :topic_add
@@ -250,10 +262,16 @@ class Server < Sinatra::Base
 
 	put "/forum/:name/edittopic" do
 		topic_name=params[:name]
-    @@db.exec_params(<<-SQL, [params["new_name"],params["description"],params["img_url"],topic_name])
-	  		UPDATE topic SET name=$1, description=$2, img_url=$3, edit_time=CURRENT_TIMESTAMP WHERE name=$4
-			SQL
-		redirect "/forum/#{params[:new_name]}"
+		get_topic = @@db.exec_params("SELECT * FROM topic WHERE LOWER(name)=LOWER($1)",[params["name"]])
+		if get_topic.values.length>0
+			@str=Warningmsg.already_exist
+			erb :topic_edit
+		else
+	    @@db.exec_params(<<-SQL, [params["new_name"],params["description"],params["img_url"],topic_name])
+		  		UPDATE topic SET name=$1, description=$2, img_url=$3, edit_time=CURRENT_TIMESTAMP WHERE name=$4
+				SQL
+			redirect "/forum/#{params[:new_name]}"
+		end
 	end
 
 	delete "/forum/:name/delete" do
@@ -297,8 +315,8 @@ class Server < Sinatra::Base
 			erb :welcome
 		else
 			get_disc = @@db.exec_params(<<-SQL,[params["disc_name"],params[:name]])
-				SELECT * FROM disc WHERE name=$1 AND topic_id IN
-				( SELECT id FROM topic WHERE name=$2)
+				SELECT * FROM disc WHERE LOWER(name)=LOWER($1) AND topic_id IN
+				( SELECT id FROM topic WHERE LOWER(name)=LOWER($2))
 			SQL
 			if get_disc.values.length>0
 				@str=Warningmsg.already_exist
@@ -328,7 +346,6 @@ class Server < Sinatra::Base
 						join forum_user ON forum_user.id =  disc.user_id
 						join topic ON disc.topic_id = topic.id
 				WHERE disc.id = $1
-				ORDER BY disc_rate DESC
 				SQL
     @comments=@@db.exec_params(<<-SQL,[disc_id])
     			SELECT comment.*, forum_user.username, disc.name AS disc_name
@@ -389,11 +406,20 @@ class Server < Sinatra::Base
 	put "/forum/:name/:discid/editdisc" do
 		@topic_name=params[:name]
 		disc_id=params[:discid]
-    @@db.exec_params(<<-SQL, [params["new_name"],params["description"],params["img_url"],disc_id])
-	  		UPDATE disc SET name=$1, description=$2, img_url=$3, edit_time=CURRENT_TIMESTAMP WHERE id=$4
+		get_disc = @@db.exec_params(<<-SQL,[params["disc_name"],params[:name]])
+				SELECT * FROM disc WHERE LOWER(name)=LOWER($1) AND topic_id IN
+				( SELECT id FROM topic WHERE LOWER(name)=LOWER($2))
 			SQL
-			@str=Warningmsg.success
-		redirect "/forum/#{params[:name]}/#{params[:discid]}"
+		if get_disc.values.length>0
+			@str=Warningmsg.already_exist
+			erb :disc_edit
+		else
+	    @@db.exec_params(<<-SQL, [params["disc_name"],params["description"],params["img_url"],disc_id])
+		  		UPDATE disc SET name=$1, description=$2, img_url=$3, edit_time=CURRENT_TIMESTAMP WHERE id=$4
+				SQL
+				@str=Warningmsg.success
+			redirect "/forum/#{params[:name]}/#{params[:discid]}"
+		end
 	end
 
 	delete "/forum/:name/:discid/delete" do

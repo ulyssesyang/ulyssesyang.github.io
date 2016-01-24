@@ -1,10 +1,9 @@
-<div class="col-sm-8 text-center"> 
-<div class="disc">
+<div class="col-md-12 jumbotron">
 	<form role="form" class="edit" action="/forum/<%= @topic_name %>/<%= @discs.first['id'] %>/editdisc" method="post">
 		<div class="form-group">
-				<label for="new_name">Discussion Name: </label>
+				<label for="disc_name">Discussion Name: </label>
 				<input type="hidden" name="_method" value="put">
-  			<input type="text" name="new_name"  id="new_name" value="<%= @discs.first['name'] %>" />
+  			<input type="text" name="disc_name"  id="disc_name" value="<%= @discs.first['name'] %>" />
 		</div>
 		<div class="form-group">
 			<label for="description">Description: </label>

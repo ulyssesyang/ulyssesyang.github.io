@@ -7,14 +7,14 @@
 		<div class="col-md-12 jumbotron">
 			<h2><a href="/forum/<%= disc['topic_name'] %>"><%= disc['name'] %></a></h2>
 			<a href="/forum/<%= disc['topic_name'] %>/<%= disc['id'] %>">
-			<img src="<%= disc['img_url']%> class="img-rounded" width="355" height="auto"" >
+			<img src="<%= disc['img_url']%>" class="img-rounded" width="100%" height="auto" >
 			</a>
 			<h5>
 				Comments: <span class="badge"><%=disc['comm_count']%></span> 
 				Rates: <span class="badge"><%=disc['disc_rate']%></span>
 				Created by:<a href="/view/<%= disc['username'] %>"> <%= disc['username'] %> </a>
 			</h5>
-			<p><%= disc['description'] %></p>
+			<div><%= markdown(disc['description']) %></div>
 			<div > 
 				<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/editdisc"> <input class="button" type="submit" value="Edit" /> </a>
 				<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/addrate"> <span class="glyphicon glyphicon-thumbs-up"></span> </a>
@@ -29,7 +29,7 @@
 			<% @comments.each do |comment| %>
 			<div class="col-md-12">
 				<% if comment['disc_id']===disc['id']%>
-				<p class="jumbotron"> <%= comment['description']%> </p>
+				<div class="jumbotron"> <%= markdown(comment['description']) %> </div>
 				<h5>Created by: <a href="/view/<%= disc['username'] %>"> <%= comment['username'] %> </a> </h5>
 				<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/addcomm"><button class="btn btn-default" type="submit"/>Join Comment</button></a>
 				<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%=comment['id']%>/editcomm"><button class="btn btn-default" type="submit" />Edit Comment</button></a>

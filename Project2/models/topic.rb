@@ -20,7 +20,7 @@ class Topic
 		FROM topic
 		join topic_user ON topic.id =  topic_user.topic_id
 		join forum_user ON topic_user.user_id = forum_user.id
-		WHERE topic.name ~ $1
+		WHERE LOWER(topic.name) ~ LOWER($1)
 		ORDER BY disc_count DESC
 		SQL
   end

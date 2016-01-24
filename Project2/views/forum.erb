@@ -16,7 +16,7 @@
 				Created by:<a href="/view/<%= topic['username'] %>"> <%= topic['username'] %> </a>
 				</h5>
 				<div id="<%= topic['name'] %>" class="collapse">
-					<p><%= topic['description'] %></p>
+					<div><%= markdown(topic['description']) %></div>
 				</div>
 				<div> 
 				<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
@@ -39,7 +39,7 @@
 								Created by:<a href="/view/<%= disc['username'] %>"> <%= disc['username'] %> </a>
 							</h5>
 							<div id="<%= disc['name'] %>" class="collapse">
-							<p class="jumbotron"> <%= disc['description']%> </p>
+							<div class="jumbotron"> <%= markdown(disc['description']) %> </div>
 							</div>
 						</div>
 					<%end%>

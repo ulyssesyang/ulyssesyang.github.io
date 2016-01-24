@@ -12,7 +12,7 @@
 				Rates: <span class="badge"><%=topic['topic_rate']%></span>
 				Created by:<a href="/view/<%= topic['username'] %>"> <%= topic['username'] %> </a>
 				</h5>
-				<p><%= topic['description'] %></p>
+				<div><%= markdown(topic['description']) %></div>
 				<div> 
 				<a href="/forum/<%= topic['name'] %>/edittopic"> <input class="button" type="submit" value="Edit" /> </a>
 				<a href="/forum/<%= topic['name'] %>/addrate"> <span class="glyphicon glyphicon-thumbs-up"></span> </a>
@@ -34,7 +34,7 @@
 								Rates: <span class="badge"><%=disc['disc_rate']%></span>
 								Created by:<a href="/view/<%= disc['username'] %>"> <%= disc['username'] %> </a>
 							</h5>
-							<p class="jumbotron"> <%= disc['description']%> </p>
+							<div class="jumbotron"> <%= markdown(disc['description']) %> </div>
 						</div>
 					<%end%>
 				<%end%>

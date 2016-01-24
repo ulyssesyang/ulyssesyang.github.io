@@ -44,6 +44,7 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     rake (10.5.0)
+    redcarpet (3.3.4)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
@@ -93,6 +94,7 @@ DEPENDENCIES
   pg
   pry
   rake
+  redcarpet
   rspec
   selenium-webdriver
   sinatra
