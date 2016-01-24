@@ -262,8 +262,15 @@ class Server < Sinatra::Base
 
 	put "/forum/:name/edittopic" do
 		topic_name=params[:name]
-		get_topic = @@db.exec_params("SELECT * FROM topic WHERE LOWER(name)=LOWER($1)",[params["name"]])
-		if get_topic.values.length>0
+		@topics=@@db.exec_params(<<-SQL, [topic_name])
+  		SELECT topic.*, topic_user.user_id, forum_user.username
+			FROM topic
+					join topic_user ON topic.id =  topic_user.topic_id
+					join forum_user ON topic_user.user_id = forum_user.id
+			WHERE name = $1
+		SQL
+		get_topic = @@db.exec_params("SELECT * FROM topic WHERE LOWER(name)=LOWER($1)",[params["new_name"]])
+		if topic_name!=params["new_name"] && get_topic.values.length>0
 			@str=Warningmsg.already_exist
 			erb :topic_edit
 		else
@@ -406,15 +413,23 @@ class Server < Sinatra::Base
 	put "/forum/:name/:discid/editdisc" do
 		@topic_name=params[:name]
 		disc_id=params[:discid]
-		get_disc = @@db.exec_params(<<-SQL,[params["disc_name"],params[:name]])
+		@discs=@@db.exec_params(<<-SQL, [disc_id])
+		  		SELECT disc.*, forum_user.username, topic.name AS topic_name
+					FROM disc
+							join forum_user ON forum_user.id =  disc.user_id
+							join topic ON disc.topic_id = topic.id
+					WHERE disc.id = $1
+				SQL
+		disc_name=@discs.first['name']
+		get_disc = @@db.exec_params(<<-SQL,[params["new_name"],params[:name]])
 				SELECT * FROM disc WHERE LOWER(name)=LOWER($1) AND topic_id IN
 				( SELECT id FROM topic WHERE LOWER(name)=LOWER($2))
 			SQL
-		if get_disc.values.length>0
+		if disc_name!=params["new_name"] && get_disc.values.length>0
 			@str=Warningmsg.already_exist
 			erb :disc_edit
 		else
-	    @@db.exec_params(<<-SQL, [params["disc_name"],params["description"],params["img_url"],disc_id])
+	    @@db.exec_params(<<-SQL, [params["new_name"],params["description"],params["img_url"],disc_id])
 		  		UPDATE disc SET name=$1, description=$2, img_url=$3, edit_time=CURRENT_TIMESTAMP WHERE id=$4
 				SQL
 				@str=Warningmsg.success
