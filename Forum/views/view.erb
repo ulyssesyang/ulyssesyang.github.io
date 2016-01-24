@@ -1,0 +1,13 @@
+<h2>Order by Discussion Numbers</h2>
+<div class="view">
+	<% @users.each do |user| %>
+	  <h2>Username: <%= user['username'] %></h2>
+		<a href="#<%= user['id'] %>" data-toggle="collapse">
+		  <img src="<%= user['img_url']%>" class="img-circle person" width="255" height="255">
+		</a>
+		<div id="<%= user['id'] %>" class="collapse">
+		  <a href="#contact"><h5><span class="glyphicon glyphicon-envelope"></span> <%= user['email'] %> </h5></a>
+		  <h5>Discussions: <span class="badge"><%=user['disc_count']%></span> </h5>
+		</div>
+	<% end%>
+</div>
