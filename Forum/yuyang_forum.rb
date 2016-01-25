@@ -149,21 +149,19 @@ module YuYangForum
 		end
 
 		get "/forum/:name/delrate" do
-			get_rate = $db.exec_params("SELECT * FROM topic WHERE name=$1",[params["name"]]).first['topic_rate'].to_i
+			get_rate = Topic.get_rate_by_name(params["name"])
 			if !current_user
 				@str=Warningmsg.notlogin
 				erb :welcome
 			elsif get_rate>0
-				$db.exec_params(<<-SQL, [params[:name]])
-		  		UPDATE topic SET topic_rate=topic_rate-1 WHERE name=$1
-					SQL
+				Topic.del_rate_by_name(params[:name])
 			end
 			redirect "/forum"
 		end
 
 		get "/forum/addtopic" do
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str = Warningmsg.notlogin
 				erb :welcome
 			else
 				erb :topic_add
@@ -172,58 +170,31 @@ module YuYangForum
 
 		post "/forum/addtopic" do
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str = Warningmsg.notlogin
 				erb :welcome
 			else
-				get_topic = $db.exec_params("SELECT * FROM topic WHERE LOWER(name)=LOWER($1)",[params["name"]])
+				get_topic = Topic.find_by_name(params["name"])
 				if get_topic.values.length>0
-					@str=Warningmsg.already_exist
+					@str = Warningmsg.already_exist
 					erb :topic_add
 				else
-					new_topic=$db.exec_params(<<-SQL, [params["name"],params["description"],params["img_url"]])
-			  		INSERT INTO topic (name, description, img_url)
-			  		VALUES ($1, $2, $3) RETURNING id
-					SQL
-					$db.exec_params(<<-SQL, [current_user["id"],new_topic[0]["id"]])
-			  		INSERT INTO topic_user (user_id, topic_id)
-			  		VALUES ($1, $2)
-					SQL
-					@str="You add this topic successfully!"
+					new_topic = Topic.create_topic(params["name"],params["description"],params["img_url"])
+					Topic.create_user_topic(current_user["id"],new_topic[0]["id"])
 					redirect "/forum"
 				end
 			end
 		end
 
 		get "/forum/:name" do
-			topic_name=params[:name]
-			@topics=$db.exec_params(<<-SQL, [topic_name])
-			  	SELECT (SELECT count(*) FROM disc WHERE disc.topic_id=topic.id) AS disc_count, topic.*, forum_user.username
-					FROM topic
-					join topic_user ON topic.id =  topic_user.topic_id
-					join forum_user ON topic_user.user_id = forum_user.id
-					WHERE topic.name = $1
-					ORDER BY disc_count DESC
-					SQL
-	    @discs=$db.exec_params(<<-SQL, [topic_name])
-		  		SELECT (SELECT count(*) FROM comment WHERE comment.disc_id=disc.id) AS comm_count, disc.*, forum_user.username, topic.name AS topic_name
-					FROM disc
-							join forum_user ON forum_user.id =  disc.user_id
-							join topic ON disc.topic_id = topic.id
-					WHERE topic.name = $1
-					ORDER BY disc_rate DESC
-					SQL
+			topic_name = params[:name]
+			@topics = Topic.topic_name_order_by_disc_count(topic_name)
+			@discs = Disc.topic_name_order_by_disc_rate(topic_name)
 			erb :topic
 		end
 
 		get "/forum/:name/edittopic" do
 			topic_name=params[:name]
-			@topics=$db.exec_params(<<-SQL, [topic_name])
-			  		SELECT topic.*, topic_user.user_id, forum_user.username
-						FROM topic
-								join topic_user ON topic.id =  topic_user.topic_id
-								join forum_user ON topic_user.user_id = forum_user.id
-						WHERE name = $1
-					SQL
+			@topics = Topic.topic_name_order_by_disc_count(topic_name)
 			if !current_user
 				@str=Warningmsg.notlogin
 				erb :welcome
@@ -237,34 +208,20 @@ module YuYangForum
 
 		put "/forum/:name/edittopic" do
 			topic_name=params[:name]
-			@topics=$db.exec_params(<<-SQL, [topic_name])
-	  		SELECT topic.*, topic_user.user_id, forum_user.username
-				FROM topic
-						join topic_user ON topic.id =  topic_user.topic_id
-						join forum_user ON topic_user.user_id = forum_user.id
-				WHERE name = $1
-			SQL
-			get_topic = $db.exec_params("SELECT * FROM topic WHERE LOWER(name)=LOWER($1)",[params["new_name"]])
+			@topics = Topic.topic_name_order_by_disc_count(topic_name)
+			get_topic = Topic.find_by_name(params["new_name"])
 			if topic_name!=params["new_name"] && get_topic.values.length>0
 				@str=Warningmsg.already_exist
 				erb :topic_edit
 			else
-		    $db.exec_params(<<-SQL, [params["new_name"],params["description"],params["img_url"],topic_name])
-			  		UPDATE topic SET name=$1, description=$2, img_url=$3, edit_time=CURRENT_TIMESTAMP WHERE name=$4
-					SQL
+				Topic.update_topic(params["new_name"],params["description"],params["img_url"],topic_name)
 				redirect "/forum/#{params[:new_name]}"
 			end
 		end
 
 		delete "/forum/:name/delete" do
-			@topic_name=params[:name]
-			@topics=$db.exec_params(<<-SQL, [@topic_name])
-			  		SELECT topic.*, topic_user.user_id, forum_user.username
-						FROM topic
-								join topic_user ON topic.id =  topic_user.topic_id
-								join forum_user ON topic_user.user_id = forum_user.id
-						WHERE topic.name = $1
-					SQL
+			topic_name = params[:name]
+			@topics = Topic.topic_name_order_by_disc_count(topic_name)
 			if !current_user
 				@str=Warningmsg.notlogin
 				erb :welcome
@@ -272,10 +229,7 @@ module YuYangForum
 				@str=Warningmsg.notcreator
 				redirect "/forum/#{params[:name]}"
 			else
-				$db.exec_params("DELETE FROM comment WHERE disc_id = $1",[params[:name]])
-				$db.exec_params("DELETE FROM disc WHERE id = $1",[params[:name]])
-				$db.exec_params("DELETE FROM disc WHERE id = $1",[params[:name]])
-				@str=Warningmsg.success
+				Topic.del_topic(topic_name)
 				redirect "/forum"
 			end
 		end
@@ -296,10 +250,7 @@ module YuYangForum
 				@str=Warningmsg.notlogin
 				erb :welcome
 			else
-				get_disc = $db.exec_params(<<-SQL,[params["disc_name"],params[:name]])
-					SELECT * FROM disc WHERE LOWER(name)=LOWER($1) AND topic_id IN
-					( SELECT id FROM topic WHERE LOWER(name)=LOWER($2))
-				SQL
+				get_disc = Disc.find_by_disc_name_topic_name(params["disc_name"],params[:name])
 				if get_disc.values.length>0
 					@str=Warningmsg.already_exist
 					erb :disc_add
