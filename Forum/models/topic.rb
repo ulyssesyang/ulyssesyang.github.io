@@ -25,6 +25,16 @@ module YuYangForum
       SQL
     end
 
+    def self.search_topic(topic_name)
+      $db.exec_params(<<-SQL, [topic_name])
+      SELECT (SELECT count(*) FROM disc WHERE disc.topic_id=topic.id) AS disc_count, topic.*, topic_user.user_id, forum_user.username
+      FROM topic
+      join topic_user ON topic.id =  topic_user.topic_id
+      join forum_user ON topic_user.user_id = forum_user.id
+      WHERE LOWER(topic.name) ~ LOWER($1)
+      SQL
+    end
+
     def self.get_rate_by_name(name)
       $db.exec_params("SELECT * FROM topic WHERE name=$1",[name]).first['topic_rate'].to_i
     end
@@ -72,6 +82,18 @@ module YuYangForum
     end
 
     def self.del_topic(name)
+      $db.exec_params(<<-SQL,[name])
+      DELETE FROM comment WHERE disc_id IN 
+      ( SELECT id From disc WHERE topic_id IN ( SELECT id From topic WHERE name = $1 ) )
+      SQL
+      $db.exec_params(<<-SQL,[name])
+      DELETE FROM disc WHERE topic_id IN 
+      ( SELECT id From topic WHERE name = $1 )
+      SQL
+      $db.exec_params(<<-SQL,[name])
+      DELETE FROM topic_user WHERE topic_id IN 
+      ( SELECT id From topic WHERE name = $1 )
+      SQL
       $db.exec_params("DELETE FROM topic WHERE name = $1",[name])
     end
 

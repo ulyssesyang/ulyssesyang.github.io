@@ -66,7 +66,7 @@ module YuYangForum
 		end
 
 		post "/welcome/search" do
-			@make_search=Topic.find_name(params["search"])
+			@make_search=Topic.search_topic(params["search"])
 			if @make_search.values.length>0
 				@str=Warningmsg.makelist(@make_search)
 			else
@@ -144,7 +144,7 @@ module YuYangForum
 				erb :welcome
 			else
 				Topic.add_rate_by_name(params[:name])
-				redirect "/forum"
+				redirect "/forum/#{params[:name]}"
 			end
 		end
 
@@ -156,7 +156,7 @@ module YuYangForum
 			elsif get_rate>0
 				Topic.del_rate_by_name(params[:name])
 			end
-			redirect "/forum"
+			redirect "/forum/#{params[:name]}"
 		end
 
 		get "/forum/addtopic" do
@@ -173,7 +173,7 @@ module YuYangForum
 				@str = Warningmsg.notlogin
 				erb :welcome
 			else
-				get_topic = Topic.find_by_name(params["name"])
+				get_topic = Topic.find_by_topic_name(params["name"])
 				if get_topic.values.length>0
 					@str = Warningmsg.already_exist
 					erb :topic_add
@@ -229,6 +229,7 @@ module YuYangForum
 				@str=Warningmsg.notcreator
 				redirect "/forum/#{params[:name]}"
 			else
+				
 				Topic.del_topic(topic_name)
 				redirect "/forum"
 			end
@@ -315,7 +316,7 @@ module YuYangForum
 			@discs 			= Disc.find_by_disc_id(disc_id)
 			disc_name=@discs.first['name']
 			get_disc 		= Disc.find_by_disc_name_topic_name(params["new_name"],params[:name])
-			if disc_name! = params["new_name"] && get_disc.values.length>0
+			if disc_name!=params["new_name"] && get_disc.values.length>0
 				@str      = Warningmsg.already_exist
 				erb :disc_edit
 			else
@@ -378,7 +379,7 @@ module YuYangForum
 			if !current_user
 				@str      = Warningmsg.notlogin
 				erb :welcome
-			elsif current_user['id']! = @comments.first['user_id']
+			elsif current_user['id']!=@comments.first['user_id']
 				@str      = Warningmsg.notcreator
 				redirect "/forum/#{params[:name]}/#{params[:discid]}"
 			else
