@@ -1,6 +1,5 @@
 require 'pry'
 require "sinatra/base"
-require "sinatra/reloader"
 require "bcrypt"
 require "redcarpet"
 
@@ -9,6 +8,7 @@ require_relative 'models/markdown'
 require_relative 'models/warning'
 require_relative 'models/topic'
 require_relative 'models/user'
+require_relative 'models/disc'
 require_relative 'models/comment'
 
 module YuYangForum
@@ -18,8 +18,7 @@ module YuYangForum
 		set :method_override, true
 
 		def current_user
-			@current_user ||= $db.exec_params("SELECT * FROM forum_user WHERE id = $1", [session["user_id"]]).first
-			# @current_user ||= User.find_by_id(session["user_id"])
+			@current_user ||= User.find_by_id(session["user_id"]).first
 		end
 
 		get "/welcome" do
@@ -36,25 +35,22 @@ module YuYangForum
 
 		post "/welcome/signup" do
 			password_digest = BCrypt::Password.create(params["password"])
-			get_user = $db.exec_params("SELECT * FROM forum_user WHERE username=$1",[params["username"]])
-			get_email = $db.exec_params("SELECT * FROM forum_user WHERE email=$1",[params["email"]])
+			get_user = User.find(params["username"])
+			get_email = User.find(params["email"])
 			if get_user.values.length>0
-				@str=Warningmsg.account_exist
+				@str = Warningmsg.account_exist
 			elsif get_email.values.length>0
-				@str=Warningmsg.email_exist
+				@str = Warningmsg.email_exist
 			else
-				new_user=$db.exec_params(<<-SQL, [params["username"],params["email"],password_digest])
-		  		INSERT INTO forum_user (username, email, password_digest)
-		  		VALUES ($1, $2, $3) RETURNING id
-				SQL
-				session["user_id"]=new_user[0]["id"].to_i
-				@str=Warningmsg.success
+				new_user = User.create(params["username"],params["email"],password_digest)
+				session["user_id"] = new_user[0]["id"].to_i
+				@str = Warningmsg.success
 			end
 			erb :welcome
 		end
 
 		post "/welcome/login" do
-			user_login=$db.exec_params("SELECT * FROM forum_user WHERE username=$1 OR email=$1",[params["login_input"]])
+			user_login = User.find(params["login_input"])
 			if user_login.values.length>0
 				temp=BCrypt::Password.new(user_login[0]['password_digest'])
 				if temp==params["password"]
@@ -84,28 +80,19 @@ module YuYangForum
 				@str=Warningmsg.notlogin
 				erb :welcome
 			else
-	    	id=current_user['id']
-	    	@users=$db.exec_params(<<-SQL)
-	    		SELECT (SELECT count(*) FROM disc WHERE disc.user_id=forum_user.id) AS disc_count, forum_user.*
-					FROM forum_user
-					ORDER BY disc_count DESC
-	    	SQL
+	    	id = current_user['id']
+	    	@users = User.all_order_by_disc_count
 	    	erb :view
 			end
 	  end
 
 	  get "/view/:name" do
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str = Warningmsg.notlogin
 				erb :welcome
 			else
 	    	id=current_user['id']
-	    	@users=$db.exec_params(<<-SQL,[params[:name]])
-	    		SELECT (SELECT count(*) FROM disc WHERE disc.user_id=forum_user.id) AS disc_count, forum_user.*
-					FROM forum_user
-					WHERE forum_user.username=$1
-					ORDER BY disc_count DESC
-	    	SQL
+	    	@users = User.user_disc_count(params[:name])
 	    	erb :view
 			end
 	  end
@@ -116,7 +103,7 @@ module YuYangForum
 				erb :welcome
 			else
 	    	id=current_user['id']
-	    	@user_login=$db.exec_params("SELECT * FROM forum_user WHERE id = $1",[id])
+	    	@user_login = User.find_by_id(id)
 	    	erb :profile
 			end
 	  end
@@ -134,9 +121,7 @@ module YuYangForum
 				gender=params["gender"]
 				phone=params["phone"]
 		    img_url=params["img_url"]
-		    $db.exec_params(<<-SQL, [params["username"],params["email"],params["fname"],params["lname"],params["gender"],params["phone"],params["img_url"], user_id])
-			  		UPDATE forum_user SET username=$1, email=$2, fname=$3, lname=$4, gender=$5, phone=$6, img_url=$7 WHERE id=$8
-					SQL
+				User.update(username,email,fname,lname,gender,phone,img_url,user_id)
 				redirect "/forum"
 			end
 		end
@@ -148,20 +133,8 @@ module YuYangForum
 		end
 
 		get "/forum" do
-			@topics=$db.exec_params(<<-SQL)
-			  	SELECT (SELECT count(*) FROM disc WHERE disc.topic_id=topic.id) AS disc_count, topic.*, forum_user.username
-					FROM topic
-					join topic_user ON topic.id =  topic_user.topic_id
-					join forum_user ON topic_user.user_id = forum_user.id
-					ORDER BY disc_count DESC
-					SQL
-	    @discs=$db.exec_params(<<-SQL)
-		  		SELECT (SELECT count(*) FROM comment WHERE comment.disc_id=disc.id) AS comm_count, disc.*, forum_user.username, topic.name AS topic_name
-					FROM disc
-							join forum_user ON forum_user.id =  disc.user_id
-							join topic ON disc.topic_id = topic.id
-					ORDER BY disc_rate DESC
-					SQL
+			@topics=Topic.all_order_by_disc_count
+			@discs=Disc.all_order_by_disc_rate
 			erb :forum
 		end
 
@@ -170,9 +143,7 @@ module YuYangForum
 				@str=Warningmsg.notlogin
 				erb :welcome
 			else
-				$db.exec_params(<<-SQL, [params[:name]])
-		  		UPDATE topic SET topic_rate=topic_rate+1 WHERE name=$1
-					SQL
+				Topic.add_rate_by_name(params[:name])
 				redirect "/forum"
 			end
 		end
