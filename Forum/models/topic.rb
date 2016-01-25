@@ -41,10 +41,6 @@ module YuYangForum
       SQL
     end
 
-    def self.find_by_name(name)
-    	$db.exec_params("SELECT * FROM topic WHERE LOWER(name)=LOWER($1)",[name])
-    end
-
     def self.create_topic(name, description, img_url)
       $db.exec_params(<<-SQL, [name, description, img_url])
         INSERT INTO topic (name, description, img_url)
@@ -59,14 +55,13 @@ module YuYangForum
       SQL
     end
 
-    def self.topic_name_order_by_disc_count(topic_name)
+    def self.find_by_topic_name(topic_name)
       $db.exec_params(<<-SQL, [topic_name])
       SELECT (SELECT count(*) FROM disc WHERE disc.topic_id=topic.id) AS disc_count, topic.*, topic_user.user_id, forum_user.username
       FROM topic
       join topic_user ON topic.id =  topic_user.topic_id
       join forum_user ON topic_user.user_id = forum_user.id
-      WHERE topic.name = $1
-      ORDER BY disc_count DESC
+      WHERE LOWER(topic.name) = LOWER($1)
       SQL
     end
 

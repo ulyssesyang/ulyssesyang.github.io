@@ -187,14 +187,14 @@ module YuYangForum
 
 		get "/forum/:name" do
 			topic_name = params[:name]
-			@topics = Topic.topic_name_order_by_disc_count(topic_name)
-			@discs = Disc.topic_name_order_by_disc_rate(topic_name)
+			@topics = Topic.find_by_topic_name(topic_name)
+			@discs = Disc.find_by_topic_name(topic_name)
 			erb :topic
 		end
 
 		get "/forum/:name/edittopic" do
 			topic_name=params[:name]
-			@topics = Topic.topic_name_order_by_disc_count(topic_name)
+			@topics = Topic.find_by_topic_name(topic_name)
 			if !current_user
 				@str=Warningmsg.notlogin
 				erb :welcome
@@ -208,8 +208,8 @@ module YuYangForum
 
 		put "/forum/:name/edittopic" do
 			topic_name=params[:name]
-			@topics = Topic.topic_name_order_by_disc_count(topic_name)
-			get_topic = Topic.find_by_name(params["new_name"])
+			@topics = Topic.find_by_topic_name(topic_name)
+			get_topic = Topic.find_by_topic_name(params["new_name"])
 			if topic_name!=params["new_name"] && get_topic.values.length>0
 				@str=Warningmsg.already_exist
 				erb :topic_edit
@@ -221,7 +221,7 @@ module YuYangForum
 
 		delete "/forum/:name/delete" do
 			topic_name = params[:name]
-			@topics = Topic.topic_name_order_by_disc_count(topic_name)
+			@topics = Topic.find_by_topic_name(topic_name)
 			if !current_user
 				@str=Warningmsg.notlogin
 				erb :welcome
@@ -245,25 +245,20 @@ module YuYangForum
 		end
 
 		post "/forum/:name/adddisc" do
-			@topic_name=params[:name]
+			@topic_name = params[:name]
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str      = Warningmsg.notlogin
 				erb :welcome
 			else
-				get_disc = Disc.find_by_disc_name_topic_name(params["disc_name"],params[:name])
+				get_disc  = Disc.find_by_disc_name_topic_name(params["disc_name"],params[:name])
 				if get_disc.values.length>0
-					@str=Warningmsg.already_exist
+					@str    = Warningmsg.already_exist
 					erb :disc_add
 				else
-					@topics=$db.exec_params(<<-SQL, [params[:name]])
-					  		SELECT * FROM topic WHERE name = $1
-							SQL
-					user_id=current_user['id'].to_i
-					topic_id=@topics.first['id'].to_i
-					new_disc=$db.exec_params(<<-SQL, [params["disc_name"],params["description"],params["img_url"],user_id,topic_id])
-			  		INSERT INTO disc (name, description, img_url, user_id, topic_id)
-			  		VALUES ($1, $2, $3, $4, $5) RETURNING id
-					SQL
+					@topics = Topic.find_by_topic_name(params[:name])
+					user_id = current_user['id'].to_i
+					topic_id= @topics.first['id'].to_i
+					new_disc= Disc.create_disc(params["disc_name"],params["description"],params["img_url"],user_id,topic_id)
 					@str=Warningmsg.success
 					redirect "/forum/#{params[:name]}"
 				end
@@ -271,60 +266,38 @@ module YuYangForum
 		end
 
 		get "/forum/:name/:discid" do
-			@topic_name=params[:name]
-			disc_id=params[:discid].to_i
-			@discs=$db.exec_params(<<-SQL, [disc_id])
-		  		SELECT (SELECT count(*) FROM comment WHERE comment.disc_id=disc.id) AS comm_count, disc.*, forum_user.username, topic.name AS topic_name
-					FROM disc
-							join forum_user ON forum_user.id =  disc.user_id
-							join topic ON disc.topic_id = topic.id
-					WHERE disc.id = $1
-					SQL
-	    @comments=$db.exec_params(<<-SQL,[disc_id])
-	    			SELECT comment.*, forum_user.username, forum_user.img_url AS user_img, disc.name AS disc_name
-						FROM comment
-								join forum_user ON forum_user.id =  comment.user_id
-								join disc ON comment.disc_id = disc.id
-						WHERE disc.id = $1
-	    	SQL
+			@topic_name = params[:name]
+			disc_id 		= params[:discid].to_i
+			@discs  		= Disc.find_by_disc_id(disc_id)
+	    @comments		= Comment.find_by_disc_id(disc_id)
 			erb :disc
 		end
 
 		get "/forum/:name/:discid/addrate" do
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str = Warningmsg.notlogin
 				erb :welcome
 			else
-				$db.exec_params(<<-SQL, [params[:discid]])
-		  		UPDATE disc SET disc_rate=disc_rate+1 WHERE id=$1
-					SQL
+				Disc.add_rate(params[:discid])
 				redirect "/forum/#{params[:name]}/#{params[:discid]}"
 			end
 		end
 
 		get "/forum/:name/:discid/delrate" do
-			get_rate = $db.exec_params("SELECT * FROM disc WHERE id=$1",[params[:discid]]).first['disc_rate'].to_i
+			get_rate = Disc.get_rate(params[:discid])
 			if !current_user
 				@str=Warningmsg.notlogin
 				erb :welcome
 			elsif get_rate>0
-				$db.exec_params(<<-SQL, [params[:discid]])
-		  		UPDATE disc SET disc_rate=disc_rate-1 WHERE id=$1
-					SQL
+				Disc.del_rate(params[:discid])
 			end
 			redirect "/forum/#{params[:name]}/#{params[:discid]}"
 		end
 
 		get "/forum/:name/:discid/editdisc" do
-			@topic_name=params[:name]
-			disc_id=params[:discid].to_i
-			@discs=$db.exec_params(<<-SQL, [disc_id])
-			  		SELECT disc.*, forum_user.username, topic.name AS topic_name
-						FROM disc
-								join forum_user ON forum_user.id =  disc.user_id
-								join topic ON disc.topic_id = topic.id
-						WHERE disc.id = $1
-					SQL
+			@topic_name = params[:name]
+			disc_id 		= params[:discid].to_i
+			@discs      = Disc.find_by_disc_id(disc_id)
 			if !current_user
 				@str=Warningmsg.notlogin
 				erb :welcome
@@ -337,114 +310,76 @@ module YuYangForum
 		end
 
 		put "/forum/:name/:discid/editdisc" do
-			@topic_name=params[:name]
-			disc_id=params[:discid]
-			@discs=$db.exec_params(<<-SQL, [disc_id])
-			  		SELECT disc.*, forum_user.username, topic.name AS topic_name
-						FROM disc
-								join forum_user ON forum_user.id =  disc.user_id
-								join topic ON disc.topic_id = topic.id
-						WHERE disc.id = $1
-					SQL
+			@topic_name = params[:name]
+			disc_id 		= params[:discid]
+			@discs 			= Disc.find_by_disc_id(disc_id)
 			disc_name=@discs.first['name']
-			get_disc = $db.exec_params(<<-SQL,[params["new_name"],params[:name]])
-					SELECT * FROM disc WHERE LOWER(name)=LOWER($1) AND topic_id IN
-					( SELECT id FROM topic WHERE LOWER(name)=LOWER($2))
-				SQL
-			if disc_name!=params["new_name"] && get_disc.values.length>0
-				@str=Warningmsg.already_exist
+			get_disc 		= Disc.find_by_disc_name_topic_name(params["new_name"],params[:name])
+			if disc_name! = params["new_name"] && get_disc.values.length>0
+				@str      = Warningmsg.already_exist
 				erb :disc_edit
 			else
-		    $db.exec_params(<<-SQL, [params["new_name"],params["description"],params["img_url"],disc_id])
-			  		UPDATE disc SET name=$1, description=$2, img_url=$3, edit_time=CURRENT_TIMESTAMP WHERE id=$4
-					SQL
-					@str=Warningmsg.success
+				Disc.update_disc(params["new_name"],params["description"],params["img_url"],disc_id)
+				@str      = Warningmsg.success
 				redirect "/forum/#{params[:name]}/#{params[:discid]}"
 			end
 		end
 
 		delete "/forum/:name/:discid/delete" do
-			@topic_name=params[:name]
-			disc_id=params[:discid].to_i
-			@discs=$db.exec_params(<<-SQL, [disc_id])
-			  		SELECT disc.*, forum_user.username, topic.name AS topic_name
-						FROM disc
-								join forum_user ON forum_user.id =  disc.user_id
-								join topic ON disc.topic_id = topic.id
-						WHERE disc.id = $1
-					SQL
+			@topic_name = params[:name]
+			disc_id     = params[:discid].to_i
+			@discs      = Disc.find_by_disc_id(disc_id)
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str      = Warningmsg.notlogin
 				erb :welcome
 			elsif current_user['id']!=@discs.first['user_id']
-				@str=Warningmsg.notcreator
+				@str 			= Warningmsg.notcreator
 				redirect "/forum/#{params[:name]}"
 			else
-				$db.exec_params("DELETE FROM comment WHERE disc_id = $1",[disc_id])
-				$db.exec_params("DELETE FROM disc WHERE id = $1",[disc_id])
-				@str=Warningmsg.success
+				Comment.del_comm_by_disc_id(disc_id)
+				Disc.del_disc(disc_id)
+				@str 			= Warningmsg.success
 				redirect "/forum/#{params[:name]}"
 			end
 		end
 
 		get "/forum/:name/:discid/addcomm" do
-			@topic_name=params[:name]
-			@disc_id=params[:discid].to_i
+			@topic_name = params[:name]
+			@disc_id    = params[:discid].to_i
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str      = Warningmsg.notlogin
 				erb :welcome
 			else
-		    @discs=$db.exec_params(<<-SQL, [@disc_id])
-				  		SELECT disc.*, forum_user.username, topic.name AS topic_name
-							FROM disc
-									join forum_user ON forum_user.id =  disc.user_id
-									join topic ON disc.topic_id = topic.id
-							WHERE disc.id = $1
-						SQL
-	    	@comments=$db.exec_params(<<-SQL,[@disc_id])
-	    			SELECT comment.*, forum_user.username, forum_user.img_url AS user_img, disc.name AS disc_name
-						FROM comment
-								join forum_user ON forum_user.id =  comment.user_id
-								join disc ON comment.disc_id = disc.id
-						WHERE disc.id = $1
-	    	SQL
+		    @discs    = Disc.find_by_disc_id(@disc_id)
+	    	@comments = Comment.find_by_disc_id(@disc_id)
 				erb :comm_add
 			end
 		end
 
 		post "/forum/:name/:discid/addcomm" do
-			@topic_name=params[:name]
-			@disc_id=params[:discid].to_i
+			@topic_name = params[:name]
+			@disc_id    = params[:discid].to_i
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str      = Warningmsg.notlogin
 				erb :welcome
 			else
-				user_id=current_user['id'].to_i
-				new_comm=$db.exec_params(<<-SQL, [params["description"],params["img_url"],user_id,@disc_id])
-		  		INSERT INTO comment (description, img_url, user_id, disc_id)
-		  		VALUES ($1, $2, $3, $4) RETURNING id
-				SQL
+				user_id   = current_user['id'].to_i
+				new_comm  = Comment.create_comm(params["description"],params["img_url"],user_id,@disc_id)
 				@str=Warningmsg.success
 				redirect "/forum/#{params[:name]}/#{params[:discid]}"
 			end
 		end
 
 		get "/forum/:name/:discid/:commid/editcomm" do
-			@topic_name=params[:name]
-			@disc_id=params[:discid].to_i
-			@comm_id=params[:commid].to_i
-			@comments=$db.exec_params(<<-SQL,[@comm_id])
-	    			SELECT comment.*, forum_user.username, forum_user.img_url AS user_img, disc.name AS disc_name
-						FROM comment
-								join forum_user ON forum_user.id =  comment.user_id
-								join disc ON comment.disc_id = disc.id
-						WHERE comment.id = $1
-	    	SQL
+			@topic_name = params[:name]
+			@disc_id    = params[:discid].to_i
+			@comm_id    = params[:commid].to_i
+			@comments   = Comment.find_by_comm_id(@comm_id)
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str      = Warningmsg.notlogin
 				erb :welcome
-			elsif current_user['id']!=@comments.first['user_id']
-				@str=Warningmsg.notcreator
+			elsif current_user['id']! = @comments.first['user_id']
+				@str      = Warningmsg.notcreator
 				redirect "/forum/#{params[:name]}/#{params[:discid]}"
 			else
 				erb :comm_edit
@@ -452,43 +387,29 @@ module YuYangForum
 		end
 
 		put "/forum/:name/:discid/:commid/editcomm" do
-			@topic_name=params[:name]
-			@disc_id=params[:discid].to_i
-			@comm_id=params[:commid].to_i
-			@comments=$db.exec_params(<<-SQL,[@comm_id])
-	    			SELECT comment.*, forum_user.username, forum_user.img_url AS user_img, disc.name AS disc_name
-						FROM comment
-								join forum_user ON forum_user.id =  comment.user_id
-								join disc ON comment.disc_id = disc.id
-						WHERE comment.id = $1
-	    	SQL
-	    $db.exec_params(<<-SQL, [params["description"],params["img_url"],@comm_id])
-		  		UPDATE comment SET description=$1, img_url=$2, edit_time=CURRENT_TIMESTAMP WHERE id=$3
-				SQL
-				@str=Warningmsg.success
+			@topic_name = params[:name]
+			@disc_id    = params[:discid].to_i
+			@comm_id    = params[:commid].to_i
+			@comments   = Comment.find_by_comm_id(@comm_id)
+			Comment.update_comm(params["description"],params["img_url"],@comm_id)
+			@str  			= Warningmsg.success
 			redirect "/forum/#{params[:name]}/#{params[:discid]}"
 		end
 
 		delete "/forum/:name/:discid/:commid/delete" do
-			@topic_name=params[:name]
-			@disc_id=params[:discid].to_i
-			@comm_id=params[:commid].to_i
-			@comments=$db.exec_params(<<-SQL,[@comm_id])
-	    			SELECT comment.*, forum_user.username, forum_user.img_url AS user_img, disc.name AS disc_name
-						FROM comment
-								join forum_user ON forum_user.id =  comment.user_id
-								join disc ON comment.disc_id = disc.id
-						WHERE comment.id = $1
-	    	SQL
+			@topic_name = params[:name]
+			@disc_id    = params[:discid].to_i
+			@comm_id    = params[:commid].to_i
+			@comments   = Comment.find_by_comm_id(@comm_id)
 			if !current_user
-				@str=Warningmsg.notlogin
+				@str      = Warningmsg.notlogin
 				erb :welcome
-			elsif current_user['id']!=@comments.first['user_id']
-				@str=Warningmsg.notcreator
+			elsif current_user['id'] != @comments.first['user_id']
+				@str      = Warningmsg.notcreator
 				redirect "/forum/#{params[:name]}/#{params[:discid]}"
 			else
-				$db.exec_params("DELETE FROM comment WHERE id = $1",[@comm_id])
-				@str=Warningmsg.success
+				Comment.del_comm_by_comm_id(@comm_id)
+				@str      = Warningmsg.success
 				redirect "/forum/#{params[:name]}/#{params[:discid]}"
 			end
 		end

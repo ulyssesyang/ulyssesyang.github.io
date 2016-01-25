@@ -18,7 +18,6 @@ module Markdownhelper
       superscript:        true,
       disable_indented_code_blocks: true,
       strikethrough:      true,
-      superscript:        true,
       underline:          true,
       highlight:          true,
       quote:              true,
