@@ -14,7 +14,7 @@ CREATE TABLE forum_user(
   lname VARCHAR,
   gender CHAR(1),
   phone VARCHAR,
-  img_url VARCHAR DEFAULT 'http://images.clipartpanda.com/question-mark-black-and-white-Icon-round-Question_mark.jpg',
+  img_url VARCHAR DEFAULT 'http://mixlive.tv/library/default_avatar.jpg',
   CHECK( gender = 'F' OR gender = 'M' OR gender = NULL )
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE topic(
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   edit_time TIMESTAMP,
   topic_rate INTEGER NOT NULL DEFAULT 0,
-  img_url VARCHAR DEFAULT 'http://images.clipartpanda.com/question-mark-black-and-white-Icon-round-Question_mark.jpg',
+  img_url VARCHAR DEFAULT 'https://imgs.xkcd.com/comics/exoplanet_neighborhood.png',
   user_id INTEGER REFERENCES forum_user(id)
   CHECK( topic_rate>=0 )
 );
@@ -42,7 +42,7 @@ CREATE TABLE disc(
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   edit_time TIMESTAMP,
   disc_rate INTEGER NOT NULL DEFAULT 0,
-  img_url VARCHAR DEFAULT 'http://images.clipartpanda.com/question-mark-black-and-white-Icon-round-Question_mark.jpg',
+  img_url VARCHAR DEFAULT 'https://imgs.xkcd.com/comics/tasks.png',
   user_id INTEGER REFERENCES forum_user(id),
   topic_id INTEGER REFERENCES topic(id)
   CHECK( disc_rate>=0 )

@@ -1,4 +1,4 @@
-require_relative "server"
+require_relative "yuyang_forum"
 
 use Rack::MethodOverride
-run Server
+run YuYangForum::Server
