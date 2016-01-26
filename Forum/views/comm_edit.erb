@@ -18,6 +18,6 @@
 		<input type="hidden" name="_method" value="delete">
 		<button class="button" type="submit">Delete</button>
 	</form>
-	<a href="/forum/<%= @topic_name %>/<%=@comments.first['disc_id']%>"><input class="button" type="submit" value="Cancel" /></a>
+	<a href="/forum/<%= @topic_name %>/<%=@comments.first['disc_id']%>"><input class="button" type="button" value="Cancel" /></a>
 	<%=@str%>
 </div>

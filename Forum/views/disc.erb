@@ -5,8 +5,8 @@
 	<div class="container">
 	<% @discs.each do |disc| %>
 		<div class="col-md-12 jumbotron">
-			<h2><a href="/forum/<%= disc['topic_name'] %>"><%= disc['name'] %></a></h2>
-			<a href="/forum/<%= disc['topic_name'] %>/<%= disc['id'] %>">
+			<h2><a href="/forum/<%= @topic_name %>"> <%= disc['name'] %> </a></h2>
+			<a href="/forum/<%= @topic_name %>/<%= disc['id'] %>">
 			<img src="<%= disc['img_url']%>" class="img-rounded" width="300" height="auto" >
 			</a>
 			<h5>
@@ -16,15 +16,15 @@
 			</h5>
 			<div><%= markdown(disc['description']) %></div>
 			<div > 
-				<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/editdisc"> <input class="button" type="submit" value="Edit" /> </a>
-				<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/addrate"> <span class="glyphicon glyphicon-thumbs-up"></span> </a>
-				<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/delrate"> <span class="glyphicon glyphicon-thumbs-down"></span> </a>
+				<a href="/forum/<%= @topic_name %>/<%=disc['id']%>/editdisc"> <input class="button" type="submit" value="Edit" /> </a>
+				<a href="/forum/<%= @topic_name %>/<%=disc['id']%>/addrate"> <span class="glyphicon glyphicon-thumbs-up"></span> </a>
+				<a href="/forum/<%= @topic_name %>/<%=disc['id']%>/delrate"> <span class="glyphicon glyphicon-thumbs-down"></span> </a>
 			</div>
-			<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/delete"> 
+			<form method="post" action="/forum/<%= @topic_name %>/<%=disc['id']%>/delete"> 
   			<input type="hidden" name="_method" value="delete">
   			<button class="btn btn-default" type="submit">Delete</button>
 			</form>
-			<a href="/forum/<%= disc['topic_name'] %>/<%=disc['id']%>/addcomm">
+			<a href="/forum/<%= @topic_name %>/<%=disc['id']%>/addcomm">
 			<button type="btn btn-default" class="btn btn-default">Add Comment</button>
 			</a>
 			</div>
@@ -40,9 +40,9 @@
 						<div class="jumbotron"> <%= markdown(comment['description']) %> </div>
 				  </div>
 				  <div class="col-sm-3">
-						<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/addcomm"><button class="btn btn-default" type="submit"/>Join Comment</button></a>
-						<a href="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%=comment['id']%>/editcomm"><button class="btn btn-default" type="submit" />Edit Comment</button></a>
-						<form method="post" action="/forum/<%=disc['topic_name']%>/<%=disc['id']%>/<%= comment['id'] %>/delete"> 
+						<a href="/forum/<%= @topic_name %>/<%=disc['id']%>/addcomm"><button class="btn btn-default" type="submit"/>Join Comment</button></a>
+						<a href="/forum/<%= @topic_name %>/<%=disc['id']%>/<%=comment['id']%>/editcomm"><button class="btn btn-default" type="submit" />Edit Comment</button></a>
+						<form method="post" action="/forum/<%= @topic_name %>/<%=disc['id']%>/<%= comment['id'] %>/delete"> 
 		    			<input type="hidden" name="_method" value="delete">
 		    			<button class="btn btn-default" type="submit">Delete</button>
 						</form>
