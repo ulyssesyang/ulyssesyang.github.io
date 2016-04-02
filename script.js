@@ -2,8 +2,6 @@
 
 (function () {
 
-	var state = true;
-
 	$("#carousel-example-generic").hide();
 
 	$( "#logo" ).hover(function(){
@@ -25,14 +23,5 @@
 			$(".info").hide();
 	    $("#carousel-example-generic").show();
 	});
-
-  $( "#oiltrends" ).hover(function() {
-    if ( state ) {
-      $( ".right_col" ).animate({
-        background: url(img/background.jpg),
-      }, 1000 );
-    } 
-    state = !state;
-  });
 
 })();
