@@ -2,7 +2,7 @@
 
 (function() {
 
-    $("#carousel-example-generic").hide();
+    $(".carousel .slide").hide();
 
     $("#logo").hover(function() {
         $(this).filter(':not(:animated)').effect("shake");
@@ -16,12 +16,32 @@
 
     $("#aboutme").click(function() {
         $(".info").show();
-        $("#carousel-example-generic").hide();
+        $(".carousel .slide").hide();
     });
 
     $("#portfolio").click(function() {
         $(".info").hide();
-        $("#carousel-example-generic").show();
+        $(".carousel .slide").show();
+    });
+
+    $("#oiltrends").click(function() {
+        $(".info").hide();
+        $(".carousel .slide").show();
+    });
+
+    $("#daytrippr").click(function() {
+        $(".info").hide();
+        $(".carousel .slide").show();
+    });
+
+    $("#forum").click(function() {
+        $(".info").hide();
+        $(".carousel .slide").show();
+    });
+
+    $("#memory").click(function() {
+        $(".info").hide();
+        $(".carousel .slide").show();
     });
 
 })();
