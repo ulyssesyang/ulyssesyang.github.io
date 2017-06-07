@@ -25,7 +25,7 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-content: center;
-    padding-left: 5em;
+    padding-left: 7em;
     padding-top: 2em;
 }
 
@@ -36,7 +36,7 @@ body {
     width: 70%;
     height: 100vh;
     overflow: scroll;
-    padding-right: 5em;
+    padding-right: 12em;
     padding-top: 2em;
 }
 
