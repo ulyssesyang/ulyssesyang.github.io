@@ -45,7 +45,7 @@ body {
     position: fixed;
     z-index: 1;
     top: 0;
-    right: 0;
+    left: 0;
     background-color: gray;
     opacity: 0.7;
     overflow-x: hidden;
@@ -65,15 +65,14 @@ body {
 
 .sidenav a:hover,
 .offcanvas a:focus {
-    color: #f1f1f1;
+    color: black;
 }
 
 .sidenav .closebtn {
     position: absolute;
     top: 0;
-    right: 25px;
+    left: 150px;
     font-size: 36px;
-    margin-left: 50px;
     color: white;
     cursor: pointer;
 }
@@ -81,44 +80,10 @@ body {
 .opennav {
     display: none;
     position: fixed;
-    top: 25px;
-    right: 25px;
+    top: 5px;
+    left: 0px;
     font-size: 36px;
-    margin-left: 50px;
     cursor: pointer;
-}
-
-@media screen and (max-width: 768px) {
-    body {
-        flex-direction: column;
-    }
-    .head-part {
-        width: 100%;
-        height: auto;
-        display: flex;
-        padding-left: 2em;
-    }
-    .side-part {
-        display: none;
-    }
-    .main-part {
-        width: 100%;
-        height: 100vh;
-        padding-left: 2em;
-        padding-right: 2em;
-        overflow: visible;
-    }
-    .sidenav {
-        padding-top: 15px;
-        display: block;
-    }
-    .sidenav a {
-        font-size: 18px;
-        display: block;
-    }
-    .opennav {
-        display: block;
-    }
 }
 
 a {
@@ -143,6 +108,17 @@ a:active {
 }
 
 .logo {
+    display: block;
+    height: 44px;
+    line-height: 44px;
+    position: fixed;
+    right: -60px;
+    bottom: 20px;
+    text-align: center;
+    width: 60px;
+}
+
+.logo-mobile {
     display: block;
     height: 44px;
     line-height: 44px;
@@ -179,6 +155,14 @@ a:active {
 
 .profile_photo img {
     padding: 0.5em;
+}
+
+.item .img-responsive {
+    width: 500px;
+}
+
+.item .img-responsive:hover {
+    width: 600px;
 }
 
 .firstname {
@@ -245,8 +229,59 @@ a:active {
 
 .timeline h3 {
     display: inline-block;
-    padding-right: 5px;
-    border-right: 2px solid gray;
+}
+
+.timeline span {
+    padding-left: 5px;
+    border-left: 2px solid gray;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        flex-direction: column;
+        overflow-x: hidden;
+    }
+    .head-part {
+        width: 100%;
+        height: auto;
+        display: flex;
+        padding-left: 2em;
+        padding-top: 2em;
+    }
+    .side-part {
+        display: none;
+    }
+    .main-part {
+        width: 100%;
+        height: 100vh;
+        padding-left: 2em;
+        padding-right: 2em;
+        overflow: visible;
+    }
+    .sidenav {
+        padding-top: 15px;
+        display: block;
+    }
+    .sidenav a {
+        font-size: 18px;
+        display: block;
+    }
+    .opennav {
+        display: block;
+    }
+    .log {
+        display: none;
+    }
+    .logo-mobile {
+        display: block;
+        position: fixed;
+        height: 44px;
+        line-height: 44px;
+        right: -60px;
+        bottom: 20px;
+        text-align: center;
+        width: 60px;
+    }
 }
 
 

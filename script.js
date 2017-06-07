@@ -51,7 +51,7 @@ $(function () {
 
             console.log('this distanceTopToSection:', distanceTopToSection);
 
-            $('html').animate({
+            $('body').animate({
                 scrollTop: distanceTopToSection
             }, 'slow');
         });
@@ -160,6 +160,40 @@ $(function () {
         });
     }
 
+    function scrollToTopMobile() {
+        var topBtnMobile = $('.logo-mobile');
+        $('body').scroll(function () {
+            console.log('scrollToTopMobile')
+            if ($(this).scrollTop() > 300) {
+                topBtnMobile
+                    .stop()
+                    .animate({
+                        'right': '20px'
+                    }, 200, 'linear');
+            } else {
+                topBtnMobile
+                    .stop()
+                    .animate({
+                        'right': '-60px'
+                    }, 200, 'linear');
+            }
+        });
+        topBtnMobile.bind('click', function (event) {
+            event.preventDefault();
+            $('body')
+                .stop()
+                .animate({
+                    'scrollTop': 0
+                }, 1000, 'easeInQuart', function () {
+                    topBtnMobile
+                        .stop()
+                        .animate({
+                            'right': '-60px'
+                        }, 1000, 'easeInQuart');
+                });
+        });
+    }
+
     function sideNavFn() {
         var openNav = $('.opennav');
         openNav.bind('click', function (event) {
@@ -184,6 +218,7 @@ $(function () {
     clickScroll();
     scrollMenu();
     scrollToTop();
+    scrollToTopMobile();
     sideNavFn();
 
 });
