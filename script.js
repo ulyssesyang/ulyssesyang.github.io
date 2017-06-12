@@ -226,10 +226,12 @@ $(function () {
                 $this.data('expanded', "no");
                 $("#readMoreBtn").text($readMore);
                 $('#readMoreText').animate({height: '20em'});
+                $('.readMoreGradient').show();
             } else {
                 $this.data('expanded', "yes");
                 $('#readMoreText').css({height: 'auto'});
                 $("#readMoreBtn").text($readLess);
+                $('.readMoreGradient').hide();
 
             }
         });
