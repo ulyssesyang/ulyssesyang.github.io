@@ -128,13 +128,24 @@
             <h2 class="section-title">
                 <i class="fa fa-user-circle"></i> About me
             </h2>
-            <div class="discription">
-                Two years ago I was still a Geological Engineer working at a oil industry. While my coding experience actually started at college. At that time I studied both geoscience and computer science and got chance of participating in programming Carbonate Basin
-                Simulation Software modules for a professor using C++. During my graduate, I also took charge of programming algorithms for data analysis using Matlab in several projects for oil companies.
-                <br> After graduate, I joined a world-lead oil service technology company Schlumberger and the main job was wireline log data processing and analysis and modeling. During these works, since there were some requirements and business needs
-                not implemented in the used software systems, I was involved in some plugins development through testing and implementing using C# and Python.
-                <br> Now, I finally work as a full-time Software Engineer who play a key role in design, programming, testing and maintenance of software systems. As time goes by, I find more and more common things between geological engineer and software
-                engineer. For example, they both require abilities of abstraction for multi-level and modeling. Through the hardworking, geologists reveal underground complex systems while software engineer generate complex software systems.
+            <div id="readMore">
+                <div class="readMoreWrapper">
+                    <div id="readMoreText" class="discription">
+                        As a kid, I always love mathematics and science in general. They fascinate me because they help me understand patterns of how things work. At college, I studied both geoscience and computer science, and that's when I had my very first coding experience.
+                        I helped my professor in programming Carbonate Basin Simulation Software modules using C++. I had also written algorithms for data analysis using Matlab in several projects for oil companies. In my senior year, I had won a national
+                        award for mathematical modeling.
+                        <br><br> Upon graduation, I joined Schlumberger, a world-leading oil service technology company. My main responsibility was wireline log data processing, analysis and modeling. At Schlumberger, software systems play a critical
+                        role in servicing our clients. However, existing systems cannot meet the evolving business requirements of some clients. Given my background in computer science, I was involved in testing and implementing software plugins, using
+                        C# and Python.
+                        <br><br> At present, I work as a full-time software engineer at a startup, and play a key role in designing, programming, testing and maintaining the company's innovative software products. As I become increasingly experienced
+                        in software development, I found geological engineering and software engineering have a lot in common. For example, they both require strong abilities for multi-level abstraction, modeling, problem-solving, and continuous learning.
+                        My experience in geological science is certainly very valuable to my current work as a software developer.
+                    </div>
+                    <div class="readMoreGradient"></div>
+                </div>
+                <button id="readMoreBtn"></button>
+                <span id="readLessBtnText" style="display: none;">Read Less</span>
+                <span id="readMoreBtnText" style="display: none;">Read More</span>
             </div>
         </section>
 
@@ -223,14 +234,14 @@
                     <p class="timeline-date">Jun 2012 – Apr 2015</p>
                     <div class="timeline-content">
                         <h3>Schlumberer USA</h3> <span>Geological Engineer/Log Analyst</span>
-                        <p>Gathering, quality-checking, processing, statistical analysis, data visualization, modeling and characterization for US unconventional reservoirs;tested and promoted to clients new tools and software applications.</p>
+                        <p>Gather and process well log data; conduct statistical analysis, data visualization, modeling and characterization for US unconventional reservoirs;test and implement new tools and software plugins for clients.</p>
                     </div>
                 </li>
                 <li>
                     <p class="timeline-date">Jul 2008 – Dec 2011</p>
                     <div class="timeline-content">
                         <h3>Schlumberer China</h3> <span>Geological Engineer/Log Analyst</span>
-                        <p>Participate in geology-related projects, including gathering, processing and analyzing datasets from oilfields in China and provide local support to internal or external users of relevant tools and software.</p>
+                        <p>Participate in geology-related projects, including gathering, processing and analyzing datasets from oilfields in China and providing local support to internal or external users of relevant tools and software.</p>
                     </div>
                 </li>
             </ul>
@@ -244,11 +255,10 @@
                 <h3 class="item-title">MindStaq</h3>
                 <a href="http://www.mindstaq.com"><img src="img/mindstaq.png" class="img-responsive" alt="Responsive image" width="500"></a>
                 <div class="discription">
-                    MindStaq is a complicated online software system which I am currently working on as my first full-time software developer job. The front-end framework of most apps of the system is <span class="skill badge">Angularjs</span> and I am
-                    taking charge of building Calendar, Task, Search UI components and related services for the main app by using <span class="skill badge">Fullcalendarjs</span> library and <span class="skill badge">Nylas</span> api. In the mean time,
-                    I am also participating in designing and implementing codes on the back-end which use <span class="skill badge">Nodejs</span> <span class="skill badge">Express</span> as the framework. These works enable me to get picture of
-                    <span class="skill badge">Microservice</span> architecture and begin to think about common challengings of software developing like <span class="skill badge">Scalability</span> <span class="skill badge">Concurrency</span> <span class="skill badge">Callback hell</span>.
-                    For example, the real-time search service I am responsible to implement is through <span class="skill badge">RabbitMQ</span> for events publish / subscribe, asynchronous processing, or messaging queues between <span class="skill badge">MongoDB</span>                    operation in the main Microservice and <span class="skill badge">ElasticSearch</span> operation in the search Microservice. I also use nodejs <span class="skill badge">async</span> to handle <span class="skill badge">Callback hell</span>                    issues during implementing <span class="skill badge">ElasticSearch</span>.
+                    MindStaq is a large online software which I am currently working on. On the front-end, I am taking charge of building Calendar, Task, Search UI components, social sharing, offline services for the main app by using <span class="skill badge">Angularjs</span>                    framework and many librariers and api, such as <span class="skill badge">FullCalendar</span> <span class="skill badge">Nylas</span>. On the back-end, I am responsible in designing and implementing api and micro-services of real-time
+                    search and recommendation and websocket by using <span class="skill badge">Nodejs</span> <span class="skill badge">Express</span> <span class="skill badge">RabbitMQ</span> <span class="skill badge">MongoDB</span> <span class="skill badge">ElasticSearch</span>                    <span class="skill badge">Socket.io</span>. These works enable me to get a full picture of
+                    <span class="skill badge">Microservice</span> architecture and begin to think about common challengings of software developing, such as <span class="skill badge">Scalability</span> <span class="skill badge">Concurrency</span>
+                    <span class="skill badge">Async Callback hell</span>.
                 </div>
             </div>
             <hr>
@@ -256,9 +266,10 @@
                 <h3 class="item-title">Oil Trends</h3>
                 <a href="http://oil-trends.ulyssesyang.com"><img src="img/oiltrends.gif" class="img-responsive" alt="Responsive image" width="500"></a>
                 <div class="discription">
-                    This personal project enabled me further understand <span class="skill badge">Thick client</span> architecture. Building rich features and functions of <span class="skill badge">single page application</span> by just using <span class="skill badge">jQuery</span>                    and <span class="skill badge">ajax</span> was challenging but rewarding. Another challenging thing was data preparation and formatting. Because in order to get oil trend, large datasets were inevitable. Yes, processing more than 30
-                    years datasets of all kinds of oil data from EIA was painful, but I still successfully processed and loaded into <span class="skill badge">MongoDB</span> and served data api by using <span class="skill badge">Nodejs</span> <span class="skill badge">Express</span>                    <span class="skill badge">Mongoose</span>. The rest of works pretty much focused on the front-end. Thanks to <span class="skill badge">D3</span>, a powerful data visualization library, really makes data speek through all kinds of graphs,
-                    like showing annual oil trends of consumption, production, import, export across all world from 1980 to 2014. This app was deployed and hosted on <span class="skill badge">DigitalOcean</span>
+                    This personal project enabled me better understand <span class="skill badge">Thick client</span> architecture. Building rich features and functions of <span class="skill badge">single page application</span> using <span class="skill badge">jQuery</span>                    and <span class="skill badge">ajax</span> was challenging but rewarding. Another challenging work was data preparation, formatting, processing more than 30 years datasets of energy data from EIA and loading into <span class="skill badge">MongoDB</span>.
+                    Then I built up web server to provide data api by using <span class="skill badge">Nodejs</span> <span class="skill badge">Express</span> <span class="skill badge">Mongoose</span>. The rest of the project work pretty much focused on
+                    the front-end data visualization by using <span class="skill badge">D3</span> library, showing annual oil trends of consumption, production, import, export across all world from 1980 to 2014. This app was deployed and hosted on
+                    <span class="skill badge">DigitalOcean</span>
                 </div>
             </div>
             <hr>
