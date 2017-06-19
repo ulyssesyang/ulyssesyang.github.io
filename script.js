@@ -8,14 +8,11 @@ $(function () {
                 e.preventDefault();
                 $('.big .highlight').removeClass('highlight');
 
-                // console.log('scrollTo this:', this);
                 $(this).addClass('highlight');
 
                 var distanceTopToSection = $('#' + $(this).data('target'))
                     .offset()
                     .top;
-
-                // console.log('this distanceTopToSection:', distanceTopToSection);
 
                 $('.main-part').animate({
                     scrollTop: distanceTopToSection
@@ -26,14 +23,11 @@ $(function () {
             e.preventDefault();
             $('.side-center .small').removeClass('actived');
 
-            // console.log('scrollTo this:', this);
             $(this).addClass('actived');
 
             var distanceTopToSection = $('#' + $(this).data('target'))
                 .offset()
                 .top;
-
-            // console.log('this distanceTopToSection:', distanceTopToSection);
 
             $('.main-part').animate({
                 scrollTop: distanceTopToSection
@@ -43,13 +37,9 @@ $(function () {
         $('.sidenav a').click(function (e) {
             e.preventDefault();
 
-            // console.log('scrollTo this:', this);
-
             var distanceTopToSection = $('#' + $(this).data('target'))
                 .offset()
                 .top;
-
-            // console.log('this distanceTopToSection:', distanceTopToSection);
 
             $('body').animate({
                 scrollTop: distanceTopToSection
@@ -63,26 +53,20 @@ $(function () {
         var side_center = $(".side-center").children();
         var tab = [];
         for (var i = 0; i < side_center.length; i++) {
-            // console.log(side_center[i]);
             var child = side_center[i];
             var ahref = $(child).attr('href');
-            // console.log(ahref);
             if (ahref) {
                 tab.push(ahref);
             }
         }
         var side_right = $(".side-right").children();
         for (var i = 0; i < side_right.length; i++) {
-            // console.log(side_right[i]);
             var child = side_right[i];
             var ahref = $(child).attr('href');
-            // console.log(ahref);
             if (ahref) {
                 tab.push(ahref);
             }
         }
-
-        // console.log(tab);
 
         $('.main-part')
             .scroll(function () {
@@ -104,8 +88,6 @@ $(function () {
                 }
 
                 if (mainScrollTop + mainHeight == docHeight) {
-                    // console.log("mainScrollTop: ", mainScrollTop) console.log("mainHeight: ",
-                    // mainHeight) console.log("pewpew docHeight:", docHeight)
                     if (!$(".side-part .side-center:last-child a").hasClass("highlight")) {
                         var navActive = $(".active").attr("href");
                         $(".side-part a[href='" + navActive + "']").removeClass("highlight");
@@ -114,8 +96,6 @@ $(function () {
                 }
 
                 if (mainScrollTop == mainHeight) {
-                    // console.log("mainScrollTop: ", mainScrollTop) console.log("mainHeight: ",
-                    // mainHeight) console.log("heyhey docHeight:", docHeight)
                     if (!$(".side-part .side-center:last-child a").hasClass("actived")) {
                         var navActive = $(".actived").attr("href");
                         $(".side-part a[href='" + navActive + "']").removeClass("actived");
@@ -162,7 +142,6 @@ $(function () {
     function scrollToTopMobile() {
         var topBtnMobile = $('.logo-mobile');
         $('body').scroll(function () {
-            // console.log('scrollToTopMobile')
             if ($(this).scrollTop() > 300) {
                 topBtnMobile
                     .stop()
@@ -220,7 +199,6 @@ $(function () {
         $("#readMoreBtn").text($readMore);
         $('#readMoreBtn').click(function () {
             var $this = $(this);
-            // console.log($readMore);
             $("#readMoreBtn").text($readMore);
             if ($this.data('expanded') == "yes") {
                 $this.data('expanded', "no");
