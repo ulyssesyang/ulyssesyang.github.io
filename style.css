@@ -19,23 +19,25 @@ body {
     order: 0;
     flex: 0 1 auto;
     align-self: stretch;
-    width: 30%;
+    width: 25%;
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-content: center;
-    padding-left: 7em;
+    padding-left: 4em;
     padding-top: 2em;
+    background-color: #e3dede;
 }
 
 .main-part {
     order: 0;
     flex: 0 1 auto;
     align-self: stretch;
-    width: 70%;
+    width: 75%;
     height: 100vh;
     overflow: scroll;
+    padding-left: 2em;
     padding-right: 12em;
     padding-top: 2em;
 }
